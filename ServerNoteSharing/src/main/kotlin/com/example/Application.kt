@@ -6,7 +6,6 @@ import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
 import io.ktor.server.application.*
 
-
 fun main(args: Array<String>) {
     print("Host db?: ")
     val host: String? = readLine()
@@ -17,7 +16,7 @@ fun main(args: Array<String>) {
     print("Password db?: ")
     val password: String? = readLine()
     val database: Database = Database
-    Database.getInstance(host!!, nomedb!!, user!!, password!!);
+    Database.getInstance(host!!, nomedb!!, user!!, password!!)
 
     io.ktor.server.netty.EngineMain.main(args)
 }
