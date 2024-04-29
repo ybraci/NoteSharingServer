@@ -6,7 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-private const val BASE_URL = "http://192.168.32.90:8080"
+private const val BASE_URL = "http://127.0.0.1:8080"
 
 fun Route.materialeRoute() {
     get("/materiale") {

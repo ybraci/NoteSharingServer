@@ -1,5 +1,6 @@
 package com.example.plugins
 
+import com.example.routes.materialeRoute
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -18,8 +19,7 @@ fun Application.configureRouting() {
             call.respondText("Hello World!")
         }
         // Static plugin. Try to access `/static/index.html`
-        static("/static") {
-            resources("static")
+        staticResources("/static", "static")
+        materialeRoute()
         }
     }
-}
