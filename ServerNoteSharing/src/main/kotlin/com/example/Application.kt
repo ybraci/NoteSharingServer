@@ -7,6 +7,7 @@ import com.example.plugins.configureSerialization
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {
+    /*
     print("Host db?: ")
     val host: String? = readLine()
     print("Nome db?: ")
@@ -17,6 +18,8 @@ fun main(args: Array<String>) {
     val password: String? = readLine()
     val database: Database = Database
     Database.getInstance(host!!, nomedb!!, user!!, password!!)
+
+     */
 
     io.ktor.server.netty.EngineMain.main(args)
 }

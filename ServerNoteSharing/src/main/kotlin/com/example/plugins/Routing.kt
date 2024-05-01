@@ -21,5 +21,6 @@ fun Application.configureRouting() {
         // Static plugin. Try to access `/static/index.html`
         staticResources("/static", "static")
         materialeRoute()
+
         }
     }
