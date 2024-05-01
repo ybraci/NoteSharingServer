@@ -1,8 +1,8 @@
-package com.example.data
+package data
 import kotlinx.serialization.Serializable
 
 @Serializable
-class MaterialeDigitale(
+data class MaterialeDigitale(
     var annoRiferimento: Int,
     var nomeCorso: String,
     var descrizioneMateriale: String,
