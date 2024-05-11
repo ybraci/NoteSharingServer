@@ -18,7 +18,7 @@ fun Route.materialeRoute() {
         )
     }
 
-    post("/upload") {
+    post("/uploadPdf") {
         val multipart = call.receiveMultipart()
         var fileBytes: ByteArray? = null
         var fileName: String? = null
