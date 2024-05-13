@@ -20,10 +20,11 @@ fun main(args: Array<String>) {
     Database.getInstance(host!!, nomedb!!, user!!, password!!)
 
     io.ktor.server.netty.EngineMain.main(args)
+    //embeddedServer(Netty, port = 8080) {module(database)}.start(wait = true)}
 }
 
-fun Application.module() {
+fun Application.module(database: Database) {
     configureSerialization()
     configureMonitoring()
-    configureRouting()
+    configureRouting(database)
 }

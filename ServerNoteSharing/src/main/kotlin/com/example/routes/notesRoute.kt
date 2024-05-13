@@ -3,6 +3,7 @@ package com.example.routes
 import com.example.comandiSQL.ComandiAnnuncio
 import com.example.data.Annuncio
 import com.example.data.MaterialeFisico
+import com.example.database.Database
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -11,7 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.File
 
-fun Route.materialeRoute() {
+fun Route.notesRoute(database: Database) {
     get("/materiale") {
         call.respond(
             HttpStatusCode.OK,
@@ -50,7 +51,7 @@ fun Route.materialeRoute() {
     post("/uploadAnnuncio"){
         val annuncio = call.receive<Annuncio>()
         call.respond(HttpStatusCode.OK, "Annuncio received successfully")
-        // ComandiAnnuncio()
+        ComandiAnnuncio(database).InsertAdv(annuncio)
     }
 
 
