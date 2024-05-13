@@ -12,7 +12,7 @@ import java.sql.SQLException
  * @author Ylli Braci, matricola nr. 749714, sede VARESE
  */
 class ComandiPersona(dbms: Database) {
-    var database: Database = dbms
+    private var database: Database = dbms
 
     /**
      * Metodo che inserisce un nuovo utente nella tabella *UtentiRegistrati*. ('E una transazione).

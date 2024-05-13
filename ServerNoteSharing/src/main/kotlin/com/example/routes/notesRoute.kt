@@ -1,5 +1,6 @@
 package com.example.routes
 
+import com.example.comandiSQL.ComandiAnnuncio
 import com.example.data.Annuncio
 import com.example.data.MaterialeFisico
 import io.ktor.http.*
@@ -48,10 +49,9 @@ fun Route.materialeRoute() {
 
     post("/uploadAnnuncio"){
         val annuncio = call.receive<Annuncio>()
-
-
-        println("Received Annuncio***********************: ${annuncio.titolo} + materiale: ${annuncio.materialeD?.descrizioneMateriale}")
-
         call.respond(HttpStatusCode.OK, "Annuncio received successfully")
+        // ComandiAnnuncio()
     }
+
+
 }
