@@ -19,7 +19,7 @@ class ComandiAnnuncio(dbms: Database){
                 prepared?.apply {
                     setString(1, annuncio.id)
                     setString(2, annuncio.titolo)
-                    setDate(3, Date(SimpleDateFormat(String.toString()).parse(annuncio.data).time)) //"2024-05-13"
+                    setDate(3, java.sql.Date(SimpleDateFormat("yyyy-MM-dd").parse(annuncio.data).time)) //"2024-05-13"
                     setString(4, annuncio.descrizioneAnnuncio)
                     setString(5, annuncio.idProprietario)
 

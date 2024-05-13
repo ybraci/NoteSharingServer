@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95f828d2-84c9-410e-a459-b76a699325c9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiAnnuncio.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiPersona.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiPersona.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/data/Annuncio.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/data/Annuncio.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiAnnuncio.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiAnnuncio.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/routes/notesRoute.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/routes/notesRoute.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
