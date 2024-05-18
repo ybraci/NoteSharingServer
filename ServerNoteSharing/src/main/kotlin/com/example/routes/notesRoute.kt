@@ -7,6 +7,7 @@ import com.example.comandiSQL.ComandiPersona
 import com.example.data.Annuncio
 import com.example.data.MaterialeDigitale
 import com.example.data.MaterialeFisico
+import com.example.data.Persona
 import com.example.database.Database
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -61,6 +62,11 @@ fun Route.notesRoute(database: Database) {
         val mFisico = call.receive<MaterialeFisico>()
         call.respond(HttpStatusCode.OK, "Annuncio received successfully")
         ComandiMaterialeFisico(database).insertMF(mFisico)
+    }
+    post("/persona"){
+        val nuovaPersona = call.receive<Persona>()
+        call.respond(HttpStatusCode.OK, "Persona received successfully")
+        ComandiPersona(database).InsertUser(nuovaPersona)
     }
 
 }

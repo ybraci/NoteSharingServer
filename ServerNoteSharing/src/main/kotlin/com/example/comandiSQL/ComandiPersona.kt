@@ -1,9 +1,11 @@
 package com.example.comandiSQL
 
+import com.example.data.Persona
 import com.example.database.Database
 import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.SQLException
+import java.text.SimpleDateFormat
 
 /**
  * Classe che contiene tutti i metodi che comunicano con la tabella *UtentiRegistrati* della base di dati, effettuando inserimenti, aggiornamenti e interrogazioni.
@@ -14,54 +16,27 @@ import java.sql.SQLException
 class ComandiPersona(dbms: Database) {
     private var database: Database = dbms
 
-    /**
-     * Metodo che inserisce un nuovo utente nella tabella *UtentiRegistrati*. ('E una transazione).
-     *
-     * @param username Username del nuovo utente.
-     * @param password Password del nuovo utente.
-     * @param cf Codice Fiscale del nuovo utente.
-     * @param nome Nome del nuovo utente.
-     * @param cognome Cognome del nuovo utente.
-     * @param provincia Provincia di residenza del nuovo utente.
-     * @param comune Comune di residenza del nuovo utente.
-     * @param via Via di residenza del nuovo utente.
-     * @param nrCivico Numero civico di residenza del nuovo utente.
-     * @param cap CAP di residenza del nuovo utente.
-     * @param dataN Data di nascita del nuovo utente.
-     * @param email E-mail del nuovo utente.
-     * @throws SQLException Se si verificano errori durante l'interazione con il database.
-     */
+
     @Throws(SQLException::class)
-    fun InsertUser(
-        email: String?,
-        password: String?,
-        cf: String?,
-        nome: String?,
-        cognome: String?,
-        provincia: String?,
-        comune: String?,
-        via: String?,
-        nrCivico: Int,
-        cap: Int,
-        dataN: Date?
-    ) {
+    fun InsertUser(persona: Persona) {
 
         try {
             database.getConnection()?.apply {
                 autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Persona VALUES (?,?,?,?,?,?,?,?,?,?,?)")
+                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Persona VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")
                 prepared?.apply {
-                    setString(1, email)
-                    setString(2, password)
-                    setString(3, cf)
-                    setString(4, nome)
-                    setString(5, cognome)
-                    setString(6, provincia)
-                    setString(7, comune)
-                    setString(8, via)
-                    setInt(9, nrCivico)
-                    setInt(10, cap)
-                    setDate(11, dataN)
+                    setString(1, persona.username)
+                    setString(2, persona.email)
+                    setString(3, persona.password)
+                    setString(4, persona.cf)
+                    setString(5, persona.nome)
+                    setString(6, persona.cognome)
+                    setString(7, persona.provincia)
+                    setString(8, persona.comune)
+                    setString(9, persona.via)
+                    setInt(10, persona.nrCivico)
+                    setInt(11, persona.cap)
+                    setDate(12, Date(SimpleDateFormat("yyyy-MM-dd").parse(persona.dataN).time))
 
                     executeUpdate()
                     close() // Close the PreparedStatement
