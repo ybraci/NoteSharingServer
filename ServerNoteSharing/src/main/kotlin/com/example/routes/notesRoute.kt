@@ -18,14 +18,6 @@ import java.io.File
 import java.sql.Date
 
 fun Route.notesRoute(database: Database) {
-    get("/materiale") {
-        call.respond(
-            HttpStatusCode.OK,
-            MaterialeFisico(20, 1999, "Analisi matematica 1", "Appunti primo anno analisi matematica", "Varese", "Casorate Sempione", "Via Trieste 76", 21011
-                )
-        )
-    }
-
     post("/uploadPdf") {
         val multipart = call.receiveMultipart()
         var fileBytes: ByteArray? = null
