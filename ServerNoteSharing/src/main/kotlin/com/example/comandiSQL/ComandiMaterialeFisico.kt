@@ -1,5 +1,6 @@
 package com.example.comandiSQL
 
+import com.example.data.Annuncio
 import com.example.data.MaterialeFisico
 import com.example.database.Database
 import java.sql.PreparedStatement
@@ -37,5 +38,39 @@ class ComandiMaterialeFisico(dbms: Database) {
             // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
+    }
+
+    fun getMF(idAnnuncio: String): MaterialeFisico {
+        val query = ("SELECT * "
+                + "FROM MaterialeFisico "
+                + "WHERE id = ? ;")
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        preparedStatement.setString(1, idAnnuncio)
+        val result = preparedStatement.executeQuery()
+
+        var materialeF: MaterialeFisico? = null
+        while (result.next()) {
+            materialeF = MaterialeFisico(
+                result.getString("id"),
+                result.getInt("costo"),
+                result.getInt("annoRif"),
+                result.getString("nomeCorso"),
+                result.getString("descrizioneMateriale"),
+                result.getString("comune"),
+                result.getString("provincia"),
+                result.getString("via"),
+                result.getInt("nrCivico"),
+                result.getInt("cap")
+                )
+        }
+        result.close()
+        preparedStatement.close()
+
+        if(materialeF!=null){
+            return materialeF
+        }else{
+            throw NoSuchElementException("Materiale Fisico non esistente con id $idAnnuncio")
+        }
+
     }
 }

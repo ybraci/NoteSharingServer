@@ -1,6 +1,7 @@
 package com.example.comandiSQL
 
 import com.example.data.MaterialeDigitale
+import com.example.data.MaterialeFisico
 import com.example.database.Database
 import java.sql.PreparedStatement
 import java.sql.SQLException
@@ -33,4 +34,33 @@ class ComandiMaterialeDigitale(dbms: Database){
             database.getConnection()?.autoCommit = true
         }
     }
+
+    fun getMD(idAnnuncio: String): MaterialeDigitale {
+        val query = ("SELECT * "
+                + "FROM MaterialeDigitale "
+                + "WHERE id = ? ;")
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        preparedStatement.setString(1, idAnnuncio)
+        val result = preparedStatement.executeQuery()
+
+        var materialeD: MaterialeDigitale? = null
+        while (result.next()) {
+            materialeD = MaterialeDigitale(
+                result.getString("id"),
+                result.getInt("annoRif"),
+                result.getString("nomeCorso"),
+                result.getString("descrizioneMateriale")
+            )
+        }
+        result.close()
+        preparedStatement.close()
+
+        if(materialeD!=null){
+            return materialeD
+        }else{
+            throw NoSuchElementException("Materiale Digitale non esistente con id $idAnnuncio")
+        }
+
+    }
+
 }

@@ -2,7 +2,6 @@ package com.example.comandiSQL
 
 import com.example.data.Annuncio
 import com.example.database.Database
-import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.SQLException
 import java.text.SimpleDateFormat
@@ -15,13 +14,14 @@ class ComandiAnnuncio(dbms: Database){
         try {
             database.getConnection()?.apply {
                 autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Annuncio VALUES (?,?,?,?,?)")
+                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Annuncio VALUES (?,?,?,?,?,?)")
                 prepared?.apply {
                     setString(1, annuncio.id)
                     setString(2, annuncio.titolo)
                     setDate(3, java.sql.Date(SimpleDateFormat("yyyy-MM-dd").parse(annuncio.data).time)) //"2024-05-13"
                     setString(4, annuncio.descrizioneAnnuncio)
                     setString(5, annuncio.idProprietario)
+                    setBoolean(6, annuncio.tipoMateriale)
 
                     executeUpdate()
                     close() // Close the PreparedStatement
@@ -36,6 +36,27 @@ class ComandiAnnuncio(dbms: Database){
             // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
+    }
+    fun getListaAnnunci(): ArrayList<Annuncio> {
+        val query = ("SELECT * "
+                + "FROM Annuncio ;")
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        val result = preparedStatement.executeQuery()
+
+        val listaA: ArrayList<Annuncio> = ArrayList()
+
+        while (result.next()) {
+            listaA.add(Annuncio(result.getString("id"),
+                result.getString("titolo"),
+                result.getDate("data").toString(),
+                result.getString("descrizioneAnnuncio"),
+                result.getBoolean("tipoMateriale"),
+                result.getString("idProprietarioPersona")
+                ))
+        }
+        result.close()
+        preparedStatement.close()
+        return listaA
     }
 
 }

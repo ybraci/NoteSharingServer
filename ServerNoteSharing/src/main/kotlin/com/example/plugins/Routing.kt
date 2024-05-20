@@ -23,5 +23,5 @@ fun Application.configureRouting(database: Database) {
         staticResources("/static", "static")
         notesRoute(database)
 
-        }
     }
+}

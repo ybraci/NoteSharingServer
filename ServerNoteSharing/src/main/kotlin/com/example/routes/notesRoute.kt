@@ -68,5 +68,44 @@ fun Route.notesRoute(database: Database) {
         call.respond(HttpStatusCode.OK, "Persona received successfully")
         ComandiPersona(database).InsertUser(nuovaPersona)
     }
+    get("/getPDFs"){
+
+    }
+    get("/listaAnnunci"){
+        val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getListaAnnunci()
+        call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
+        //forse potrebbe essere utile salvarli localmente per motivi di efficienza
+        //e poi aggiornarli in detterminati momenti ppure quando l'utente clicca il bottone
+    }
+    get("/materialeFisicoAssociatoAnnuncio"){
+        val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
+        //val idAnnuncio = "47f539ab-2cb5-4665-83bc-7b7bd0ebcbea"
+        if (idAnnuncio != null) {
+            try {
+                val materiale = ComandiMaterialeFisico(database).getMF(idAnnuncio)
+                //val materiale = MaterialeFisico("47f539ab-2cb5-4665-83bc-7b7bd0ebcbea", 2, 2024, "algotitmi", "descriione: At its core, the operating system is known as the Android Open Source Project (AOSP)[5] and is free and open-source software (FOSS) primarily licensed under the Apache License. However, most devices run on the proprietary Android version developed by Google", "Varese", "Varese", "Viale Aguggiari", 169, 21100)
+                call.respond(HttpStatusCode.OK, materiale)
+            } catch (e: NoSuchElementException) {
+                call.respond(HttpStatusCode.NotFound, e.message ?: "Materiale Fisico non esistente con id $idAnnuncio")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "An error occurred: ${e.message}")
+            }
+        } else {
+            call.respond(HttpStatusCode.BadRequest, "Missing or invalid idAnnuncio parameter")
+        }
+    }
+    get("/materialeDigitaleAssociatoAnnuncio"){
+        val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
+        //val idAnnuncio = "47f539ab-2cb5-4665-83bc-7b7bd0ebcbea"
+        try {
+            val materiale = ComandiMaterialeDigitale(database).getMD(idAnnuncio)
+            call.respond(HttpStatusCode.OK, materiale)
+        } catch (e: NoSuchElementException) {
+            call.respond(HttpStatusCode.NotFound, e.message ?: "Materiale Digitale non esistente con id $idAnnuncio")
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError, "An error occurred: ${e.message}")
+        }
+
+    }
 
 }
