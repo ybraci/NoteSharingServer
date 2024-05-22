@@ -1,10 +1,12 @@
 package com.example
 
+import com.example.data.UserSession
 import com.example.database.Database
 import com.example.plugins.configureMonitoring
 import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
 import io.ktor.server.application.*
+import io.ktor.server.sessions.*
 
 
 fun main(args: Array<String>) {
@@ -28,6 +30,7 @@ fun main(args: Array<String>) {
 fun Application.module() {
     val database: Database = Database
     Database.getInstance("localhost", "db_noteSharing", "postgres", "postgres")
+
     configureSerialization()
     configureMonitoring()
     configureRouting(database)

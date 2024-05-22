@@ -5,14 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95f828d2-84c9-410e-a459-b76a699325c9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/data/Persona.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/data/UserSession.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/Application.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/Application.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiMaterialeDigitale.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiMaterialeDigitale.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiMaterialeFisico.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiMaterialeFisico.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/data/MaterialeDigitale.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/data/MaterialeDigitale.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/data/MaterialeFisico.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/data/MaterialeFisico.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/routes/materialeRoute.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiPersona.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/comandiSQL/ComandiPersona.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/plugins/Routing.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/plugins/Routing.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/routes/notesRoute.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/routes/notesRoute.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/routes/personeRoute.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerNoteSharing/src/main/kotlin/com/example/routes/personeRoute.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +48,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin Class" />
+        <option value="Class" />
+        <option value="Kotlin Data Class" />
       </list>
     </option>
   </component>
@@ -69,7 +73,7 @@
     &quot;Gradle.Build ServerNoteSharing.executor&quot;: &quot;Run&quot;,
     &quot;Kotlin.ApplicationKt.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;LoginSignUp&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/david/NoteSharingServerRepo/NoteSharingServerRepo&quot;
   },
@@ -104,6 +108,17 @@
       <updated>1715340183764</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />

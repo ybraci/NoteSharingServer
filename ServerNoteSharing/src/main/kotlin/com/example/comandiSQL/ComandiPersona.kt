@@ -3,6 +3,7 @@ package com.example.comandiSQL
 import com.example.database.Database
 import java.sql.Date
 import java.sql.PreparedStatement
+import java.sql.ResultSet
 import java.sql.SQLException
 
 /**
@@ -32,7 +33,7 @@ class ComandiPersona(dbms: Database) {
      * @throws SQLException Se si verificano errori durante l'interazione con il database.
      */
     @Throws(SQLException::class)
-    fun InsertUser(
+    fun signUp(
         email: String?,
         password: String?,
         cf: String?,
@@ -45,7 +46,6 @@ class ComandiPersona(dbms: Database) {
         cap: Int,
         dataN: Date?
     ) {
-
         try {
             database.getConnection()?.apply {
                 autoCommit = false
@@ -76,7 +76,6 @@ class ComandiPersona(dbms: Database) {
             // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
-
     }
 
     /**
@@ -115,7 +114,7 @@ class ComandiPersona(dbms: Database) {
 
     /**
      * Metodo che effettua una interrogazione nella tabella *UtentiRegistrati* per vedere se lo username dell'utente
-     * preso in input e gia presente.
+     * preso in input è già presente.
      *
      * @param username Username da cercare.
      * @return Restituisce un boolean, che se e true significa che lo username e libero e se restituisce false significa che e gia presente.
@@ -173,4 +172,61 @@ class ComandiPersona(dbms: Database) {
     return false
     }
      */
+
+    fun loginUser(usernameOrEmail: String, password: String): Boolean {
+        val query = "SELECT * FROM Persona WHERE (username = ? OR email = ?) AND password = ?"
+        val connection = database.getConnection()
+        var preparedStatement: PreparedStatement? = null
+        var resultSet: ResultSet? = null
+
+        return try {
+            preparedStatement = connection?.prepareStatement(query)
+            preparedStatement?.apply {
+                setString(1, usernameOrEmail) //confrontiamo sia il campo email che il campo username
+                setString(2, usernameOrEmail) //confrontiamo sia il campo email che il campo username
+                setString(3, password)
+
+                resultSet = executeQuery()
+            }
+            resultSet?.next() == true // per verificare se esiste almeno una riga nel risultato della query.
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            false
+        } finally {
+            try {
+                resultSet?.close()
+                preparedStatement?.close()
+                connection?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
+    }
+    //In sostanza, questa funzione verifica se esiste un utente con l’username o l’email e la password forniti.
+    // Se esiste, l’utente viene autenticato con successo e la funzione restituisce true.
+    // Se non esiste, l’autenticazione fallisce e la funzione restituisce false.
+
+    @Throws(SQLException::class)
+    fun isEmailTaken(email: String?): Boolean {
+        val query = "SELECT email FROM Persona WHERE email = ?"
+        val connection = database.getConnection()
+        var preparedStatement: PreparedStatement? = null
+        var resultSet: ResultSet? = null
+
+        return try {
+            preparedStatement = connection?.prepareStatement(query)
+            preparedStatement?.setString(1, email)
+            resultSet = preparedStatement?.executeQuery()
+            resultSet?.next() == true
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            throw e
+        } finally {
+            resultSet?.close()
+            preparedStatement?.close()
+            connection?.close()
+        }
+    }
+
+
 }
