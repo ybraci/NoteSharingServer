@@ -3,7 +3,6 @@ package com.example.comandiSQL
 import com.example.database.Database
 import java.sql.Date
 import java.sql.PreparedStatement
-import java.sql.ResultSet
 import java.sql.SQLException
 
 /**
@@ -19,6 +18,7 @@ class ComandiPersona(dbms: Database) {
      * Metodo che inserisce un nuovo utente nella tabella *UtentiRegistrati*. ('E una transazione).
      *
      * @param username Username del nuovo utente.
+     * @param email E-mail del nuovo utente.
      * @param password Password del nuovo utente.
      * @param cf Codice Fiscale del nuovo utente.
      * @param nome Nome del nuovo utente.
@@ -29,11 +29,11 @@ class ComandiPersona(dbms: Database) {
      * @param nrCivico Numero civico di residenza del nuovo utente.
      * @param cap CAP di residenza del nuovo utente.
      * @param dataN Data di nascita del nuovo utente.
-     * @param email E-mail del nuovo utente.
      * @throws SQLException Se si verificano errori durante l'interazione con il database.
      */
     @Throws(SQLException::class)
     fun signUp(
+        username: String?,
         email: String?,
         password: String?,
         cf: String?,
@@ -49,19 +49,20 @@ class ComandiPersona(dbms: Database) {
         try {
             database.getConnection()?.apply {
                 autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Persona VALUES (?,?,?,?,?,?,?,?,?,?,?)")
+                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Persona VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")
                 prepared?.apply {
-                    setString(1, email)
-                    setString(2, password)
-                    setString(3, cf)
-                    setString(4, nome)
-                    setString(5, cognome)
-                    setString(6, provincia)
-                    setString(7, comune)
-                    setString(8, via)
-                    setInt(9, nrCivico)
-                    setInt(10, cap)
-                    setDate(11, dataN)
+                    setString(1, username)
+                    setString(2, email)
+                    setString(3, password)
+                    setString(4, cf)
+                    setString(5, nome)
+                    setString(6, cognome)
+                    setString(7, provincia)
+                    setString(8, comune)
+                    setString(9, via)
+                    setInt(10, nrCivico)
+                    setInt(11, cap)
+                    setDate(12, dataN)
 
                     executeUpdate()
                     close() // Close the PreparedStatement
@@ -201,20 +202,20 @@ class ComandiPersona(dbms: Database) {
     // Se non esiste, l’autenticazione fallisce e la funzione restituisce false.
 
     @Throws(SQLException::class)
-    fun isEmailTaken(email: String?): Boolean {
-        val query = "SELECT email FROM Persona WHERE email = ?"
+    fun isUsernameTaken(username: String?): Boolean {
+        val query = "SELECT username FROM Persona WHERE username = ?"
         val preparedStatement = database.getConnection()!!.prepareStatement(query)
         preparedStatement.apply {
-            setString(1, email)
+            setString(1, username)
         }
         val result = preparedStatement.executeQuery()
-        var emailResult = ""
+        var usernameResult = ""
         while(result.next()) {
-            emailResult = result.getString("email")
+            usernameResult = result.getString("username")
         }
         result?.close()
         preparedStatement?.close()
-        if(email == emailResult){
+        if(username == usernameResult){
             return true
         } else {
             return false

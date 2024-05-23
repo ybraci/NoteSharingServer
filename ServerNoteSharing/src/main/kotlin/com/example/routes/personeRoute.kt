@@ -20,7 +20,7 @@ fun Route.personeRoute(database: Database) {
         val request = call.receive<Persona>()
         val authenticated = comandiPersona.loginUser(request.username, request.password)
         if (authenticated) {
-            call.sessions.set(UserSession(usernameSession = request.username))
+            call.sessions.set(UserSession(request.username))
             call.respond(HttpStatusCode.OK, "Login successful")
         } else {
             call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
@@ -31,10 +31,11 @@ fun Route.personeRoute(database: Database) {
         val request = call.receive<Persona>()
 
         try {
-            if (comandiPersona.isEmailTaken(request.email)) {
-                call.respond(HttpStatusCode.Conflict, "Email already in use")
+            if (comandiPersona.isUsernameTaken(request.username)) {
+                call.respond(HttpStatusCode.Conflict, "Username already in use")
             } else {
                 comandiPersona.signUp(
+                    username = request.username,
                     email = request.email,
                     password = request.password,
                     cf = request.cf,
@@ -47,7 +48,7 @@ fun Route.personeRoute(database: Database) {
                     cap = request.cap.toInt(),
                     dataN = Date.valueOf(request.dataN)
                 )
-                call.respond(HttpStatusCode.Created, "User registered successfully")
+                call.respond(HttpStatusCode.Created, "User ${request.username} registered successfully")
             }
         } catch (e: SQLException) {
             call.respond(HttpStatusCode.InternalServerError, "Error during registration: ${e.message}")
