@@ -20,7 +20,7 @@ fun Route.personeRoute(database: Database) {
         val request = call.receive<Persona>()
         val authenticated = comandiPersona.loginUser(request.username, request.password)
         if (authenticated) {
-            call.sessions.set(UserSession(userId = request.username))
+            call.sessions.set(UserSession(usernameSession = request.username))
             call.respond(HttpStatusCode.OK, "Login successful")
         } else {
             call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")

@@ -1,5 +1,5 @@
 package com.example.data
 
 data class UserSession(
-    val userId: String
+    val usernameSession: String
 )

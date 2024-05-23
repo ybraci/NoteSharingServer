@@ -173,33 +173,27 @@ class ComandiPersona(dbms: Database) {
     }
      */
 
-    fun loginUser(usernameOrEmail: String, password: String): Boolean {
-        val query = "SELECT * FROM Persona WHERE (username = ? OR email = ?) AND password = ?"
-        val connection = database.getConnection()
-        var preparedStatement: PreparedStatement? = null
-        var resultSet: ResultSet? = null
+    fun loginUser(username: String, password: String): Boolean {
+        val query = "SELECT username, password FROM Persona WHERE username = ? AND password = ?"
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
 
-        return try {
-            preparedStatement = connection?.prepareStatement(query)
-            preparedStatement?.apply {
-                setString(1, usernameOrEmail) //confrontiamo sia il campo email che il campo username
-                setString(2, usernameOrEmail) //confrontiamo sia il campo email che il campo username
-                setString(3, password)
-
-                resultSet = executeQuery()
-            }
-            resultSet?.next() == true // per verificare se esiste almeno una riga nel risultato della query.
-        } catch (e: SQLException) {
-            e.printStackTrace()
-            false
-        } finally {
-            try {
-                resultSet?.close()
-                preparedStatement?.close()
-                connection?.close()
-            } catch (e: SQLException) {
-                e.printStackTrace()
-            }
+        preparedStatement?.apply {
+            setString(1, username)
+            setString(2, password)
+        }
+        val result = preparedStatement.executeQuery()
+        var usernameResult = ""
+        var passwordResult = ""
+        while(result.next()) {
+            usernameResult = result.getString("username")
+            passwordResult = result.getString("password")
+        }
+        result?.close()
+        preparedStatement?.close()
+        if(username==usernameResult && password==passwordResult){
+            return true
+        } else {
+            return false
         }
     }
     //In sostanza, questa funzione verifica se esiste un utente con l’username o l’email e la password forniti.
@@ -209,22 +203,21 @@ class ComandiPersona(dbms: Database) {
     @Throws(SQLException::class)
     fun isEmailTaken(email: String?): Boolean {
         val query = "SELECT email FROM Persona WHERE email = ?"
-        val connection = database.getConnection()
-        var preparedStatement: PreparedStatement? = null
-        var resultSet: ResultSet? = null
-
-        return try {
-            preparedStatement = connection?.prepareStatement(query)
-            preparedStatement?.setString(1, email)
-            resultSet = preparedStatement?.executeQuery()
-            resultSet?.next() == true
-        } catch (e: SQLException) {
-            e.printStackTrace()
-            throw e
-        } finally {
-            resultSet?.close()
-            preparedStatement?.close()
-            connection?.close()
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        preparedStatement.apply {
+            setString(1, email)
+        }
+        val result = preparedStatement.executeQuery()
+        var emailResult = ""
+        while(result.next()) {
+            emailResult = result.getString("email")
+        }
+        result?.close()
+        preparedStatement?.close()
+        if(email == emailResult){
+            return true
+        } else {
+            return false
         }
     }
 
