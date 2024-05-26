@@ -13,6 +13,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 
 fun Application.configureRouting(database: Database) {
+
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             call.respondText(text = "500: $cause" , status = HttpStatusCode.InternalServerError)
@@ -23,11 +24,13 @@ fun Application.configureRouting(database: Database) {
     // Ad esempio, dopo che un utente si è autenticato con successo nel tuo sito web,
     // vuoi mantenere traccia di chi è quell'utente nelle richieste successive,
     // senza dover reinserire le credenziali ogni volta.
+
     install(Sessions) {
         cookie<UserSession>("user_session") {
             cookie.extensions["SameSite"] = "lax"
         }
     }
+
     // UserSession è la classe che rappresenta le informazioni di sessione dell'utente.
     // "user_session" è il nome del cookie che verrà utilizzato per memorizzare queste informazioni.
     // impostiamo l'attributo SameSite del cookie su "lax" per migliorare la sicurezza.

@@ -1,5 +1,7 @@
 package com.example.data
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Persona(
     val username: String,
     val email: String,

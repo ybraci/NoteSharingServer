@@ -16,20 +16,32 @@ import java.sql.SQLException
 fun Route.personeRoute(database: Database) {
     val comandiPersona = ComandiPersona(database)
 
+    /*
     post("/UserLogin") {
-        val request = call.receive<Persona>()
-        val authenticated = comandiPersona.loginUser(request.username, request.password)
+        val request = call.receive<UserSession>()
+        val authenticated = comandiPersona.loginUser(request.usernameSession, request.passwordSession)
         if (authenticated) {
-            call.sessions.set(UserSession(request.username))
+            call.sessions.set(UserSession(request.usernameSession, request.passwordSession))
             call.respond(HttpStatusCode.OK, "Login successful")
         } else {
             call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
         }
     }
+    */
+
+    post("/UserLogin") {
+        val request = call.receive<UserSession>()
+        val authenticated = comandiPersona.loginUser(request.usernameSession, request.passwordSession)
+        if (authenticated) {
+            call.sessions.set(UserSession(request.usernameSession, request.passwordSession))
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Login successful")) //da doc.: mapOf è serializable
+        } else {
+            call.respond(HttpStatusCode.Unauthorized, mapOf("message" to "Invalid credentials"))
+        }
+    }
 
     post("/UserSignUp") {
         val request = call.receive<Persona>()
-
         try {
             if (comandiPersona.isUsernameTaken(request.username)) {
                 call.respond(HttpStatusCode.Conflict, "Username already in use")
