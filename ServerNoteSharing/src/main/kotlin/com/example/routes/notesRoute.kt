@@ -3,6 +3,7 @@ package com.example.routes
 import com.example.comandiSQL.ComandiAnnuncio
 import com.example.comandiSQL.ComandiMaterialeDigitale
 import com.example.comandiSQL.ComandiMaterialeFisico
+import com.example.comandiSQL.ComandiPersona
 import com.example.data.Annuncio
 import com.example.data.MaterialeDigitale
 import com.example.data.MaterialeFisico
@@ -61,11 +62,7 @@ fun Route.notesRoute(database: Database) {
         call.respond(HttpStatusCode.OK, "Annuncio received successfully")
         ComandiMaterialeFisico(database).insertMF(mFisico)
     }
-    post("/persona"){
-        val nuovaPersona = call.receive<Persona>()
-        call.respond(HttpStatusCode.OK, "Persona received successfully")
-        ComandiPersona(database).InsertUser(nuovaPersona)
-    }
+
     get("/getPDFs"){
 
     }
