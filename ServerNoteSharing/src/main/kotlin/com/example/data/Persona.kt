@@ -1,19 +1,18 @@
 package com.example.data
-
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Persona(
-    var username: String,
-    var email: String,
-    var password: String,
-    var cf: String,
-    var nome: String,
-    var cognome: String,
-    var provincia: String,
-    var comune: String,
-    var via: String,
-    var nrCivico: Int,
-    var cap: Int,
-    var dataN: String
-){}
+data class Persona(
+    val username: String,
+    val email: String,
+    val password: String,
+    val cf: String,
+    val nome: String,
+    val cognome: String,
+    val provincia: String,
+    val comune: String,
+    val via: String,
+    val nrCivico: Int,
+    val cap: Int,
+    val dataN: String //la data è string perchè nessuno dei tipi di DATE supportano la serializzazione
+)

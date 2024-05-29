@@ -28,6 +28,7 @@ fun main(args: Array<String>) {
 fun Application.module() {
     val database: Database = Database
     Database.getInstance("localhost", "db_noteSharing", "postgres", "postgres")
+
     configureSerialization()
     configureMonitoring()
     configureRouting(database)

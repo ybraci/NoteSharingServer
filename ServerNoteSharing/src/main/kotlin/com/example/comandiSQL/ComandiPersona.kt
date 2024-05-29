@@ -16,27 +16,55 @@ import java.text.SimpleDateFormat
 class ComandiPersona(dbms: Database) {
     private var database: Database = dbms
 
-
+    /**
+     * Metodo che inserisce un nuovo utente nella tabella *UtentiRegistrati*. ('E una transazione).
+     *
+     * @param username Username del nuovo utente.
+     * @param email E-mail del nuovo utente.
+     * @param password Password del nuovo utente.
+     * @param cf Codice Fiscale del nuovo utente.
+     * @param nome Nome del nuovo utente.
+     * @param cognome Cognome del nuovo utente.
+     * @param provincia Provincia di residenza del nuovo utente.
+     * @param comune Comune di residenza del nuovo utente.
+     * @param via Via di residenza del nuovo utente.
+     * @param nrCivico Numero civico di residenza del nuovo utente.
+     * @param cap CAP di residenza del nuovo utente.
+     * @param dataN Data di nascita del nuovo utente.
+     * @throws SQLException Se si verificano errori durante l'interazione con il database.
+     */
     @Throws(SQLException::class)
-    fun InsertUser(persona: Persona) {
-
+    fun signUp(
+        username: String?,
+        email: String?,
+        password: String?,
+        cf: String?,
+        nome: String?,
+        cognome: String?,
+        provincia: String?,
+        comune: String?,
+        via: String?,
+        nrCivico: Int,
+        cap: Int,
+        dataN: Date?
+    ) {
         try {
             database.getConnection()?.apply {
                 autoCommit = false
                 val prepared: PreparedStatement? = prepareStatement("INSERT INTO Persona VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")
                 prepared?.apply {
-                    setString(1, persona.username)
-                    setString(2, persona.email)
-                    setString(3, persona.password)
-                    setString(4, persona.cf)
-                    setString(5, persona.nome)
-                    setString(6, persona.cognome)
-                    setString(7, persona.provincia)
-                    setString(8, persona.comune)
-                    setString(9, persona.via)
-                    setInt(10, persona.nrCivico)
-                    setInt(11, persona.cap)
-                    setDate(12, Date(SimpleDateFormat("yyyy-MM-dd").parse(persona.dataN).time))
+                    setString(1, username)
+                    setString(2, email)
+                    setString(3, password)
+                    setString(4, cf)
+                    setString(5, nome)
+                    setString(6, cognome)
+                    setString(7, provincia)
+                    setString(8, comune)
+                    setString(9, via)
+                    setInt(10, nrCivico)
+                    setInt(11, cap)
+                    setDate(12, dataN)
 
                     executeUpdate()
                     close() // Close the PreparedStatement
@@ -51,7 +79,6 @@ class ComandiPersona(dbms: Database) {
             // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
-
     }
 
     /**
@@ -90,7 +117,7 @@ class ComandiPersona(dbms: Database) {
 
     /**
      * Metodo che effettua una interrogazione nella tabella *UtentiRegistrati* per vedere se lo username dell'utente
-     * preso in input e gia presente.
+     * preso in input è già presente.
      *
      * @param username Username da cercare.
      * @return Restituisce un boolean, che se e true significa che lo username e libero e se restituisce false significa che e gia presente.
@@ -148,4 +175,54 @@ class ComandiPersona(dbms: Database) {
     return false
     }
      */
+
+    fun loginUser(username: String, password: String): Boolean {
+        val query = "SELECT username, password FROM Persona WHERE username = ? AND password = ?"
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+
+        preparedStatement?.apply {
+            setString(1, username)
+            setString(2, password)
+        }
+        val result = preparedStatement.executeQuery()
+        var usernameResult = ""
+        var passwordResult = ""
+        while(result.next()) {
+            usernameResult = result.getString("username")
+            passwordResult = result.getString("password")
+        }
+        result?.close()
+        preparedStatement?.close()
+        if(username==usernameResult && password==passwordResult){
+            return true
+        } else {
+            return false
+        }
+    }
+    //In sostanza, questa funzione verifica se esiste un utente con l’username o l’email e la password forniti.
+    // Se esiste, l’utente viene autenticato con successo e la funzione restituisce true.
+    // Se non esiste, l’autenticazione fallisce e la funzione restituisce false.
+
+    @Throws(SQLException::class)
+    fun isUsernameTaken(username: String?): Boolean {
+        val query = "SELECT username FROM Persona WHERE username = ?"
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        preparedStatement.apply {
+            setString(1, username)
+        }
+        val result = preparedStatement.executeQuery()
+        var usernameResult = ""
+        while(result.next()) {
+            usernameResult = result.getString("username")
+        }
+        result?.close()
+        preparedStatement?.close()
+        if(username == usernameResult){
+            return true
+        } else {
+            return false
+        }
+    }
+
+
 }
