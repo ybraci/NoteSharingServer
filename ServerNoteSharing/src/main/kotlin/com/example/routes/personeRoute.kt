@@ -16,19 +16,6 @@ import java.sql.SQLException
 fun Route.personeRoute(database: Database) {
     val comandiPersona = ComandiPersona(database)
 
-    /*
-    post("/UserLogin") {
-        val request = call.receive<UserSession>()
-        val authenticated = comandiPersona.loginUser(request.usernameSession, request.passwordSession)
-        if (authenticated) {
-            call.sessions.set(UserSession(request.usernameSession, request.passwordSession))
-            call.respond(HttpStatusCode.OK, "Login successful")
-        } else {
-            call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
-        }
-    }
-    */
-
     post("/UserLogin") {
         val request = call.receive<UserSession>()
         val authenticated = comandiPersona.loginUser(request.usernameSession, request.passwordSession)
@@ -44,7 +31,7 @@ fun Route.personeRoute(database: Database) {
         val request = call.receive<Persona>()
         try {
             if (comandiPersona.isUsernameTaken(request.username)) {
-                call.respond(HttpStatusCode.Conflict, "Username already in use")
+                call.respond(HttpStatusCode.Conflict, mapOf("message" to "Username already in use"))
             } else {
                 comandiPersona.signUp(
                     username = request.username,
@@ -60,10 +47,10 @@ fun Route.personeRoute(database: Database) {
                     cap = request.cap.toInt(),
                     dataN = Date.valueOf(request.dataN)
                 )
-                call.respond(HttpStatusCode.Created, "User ${request.username} registered successfully")
+                call.respond(HttpStatusCode.Created, mapOf("message" to "User registered successfully"))
             }
         } catch (e: SQLException) {
-            call.respond(HttpStatusCode.InternalServerError, "Error during registration: ${e.message}")
+            call.respond(HttpStatusCode.InternalServerError, mapOf("message" to "Error during registration: ${e.message}"))
         }
     }
 
