@@ -1,6 +1,0 @@
-syntax = "proto3";
-import "google/protobuf/duration.proto";
-
-service NoteSharing{
-    rpc sum(Int, Int) returns (Int);
-}
