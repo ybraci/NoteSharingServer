@@ -6,6 +6,7 @@ import com.example.data.UserSession
 import com.example.database.Database
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -20,7 +21,7 @@ fun Route.personeRoute(database: Database) {
         val request = call.receive<UserSession>()
         val authenticated = comandiPersona.loginUser(request.usernameSession, request.passwordSession)
         if (authenticated) {
-            call.sessions.set(UserSession(request.usernameSession, request.passwordSession))
+            //call.sessions.set(UserSession(request.usernameSession, request.passwordSession))
             call.respond(HttpStatusCode.OK, mapOf("message" to "Login successful")) //da doc.: mapOf è serializable
         } else {
             call.respond(HttpStatusCode.Unauthorized, mapOf("message" to "Invalid credentials"))

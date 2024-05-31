@@ -38,5 +38,6 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     implementation ("org.postgresql:postgresql:42.7.3") //dal sito di maven
+    implementation("io.ktor:ktor-server-auth:$ktor_version") //authentication
 
 }

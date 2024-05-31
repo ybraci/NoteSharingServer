@@ -11,12 +11,32 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.util.*
 
 fun Application.configureRouting(database: Database) {
-
+    val digestFunction = getDigestFunction("SHA-256") { "ktor${it.length}" }
+    val hashedUserTable = UserHashedTableAuth(
+        table = mapOf(
+            "jetbrains" to digestFunction("foobar"),
+            "admin" to digestFunction("password")
+        ),
+        digester = digestFunction
+    )
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             call.respondText(text = "500: $cause" , status = HttpStatusCode.InternalServerError)
+        }
+    }
+
+    //per l'autenticazione
+    install(Authentication) {
+        basic("auth-basic") {
+            realm = "Access to the '/' path"
+            validate { credentials ->
+                hashedUserTable.authenticate(credentials)
+            }
         }
     }
 
@@ -45,5 +65,11 @@ fun Application.configureRouting(database: Database) {
 
         notesRoute(database)
         personeRoute(database) // Aggiungi questa riga per includere le route delle persone
+
+        authenticate("auth-basic") {
+            get("/") {
+                call.respondText("Hello, ${call.principal<UserIdPrincipal>()?.name}!") //cosi prende il nome dell'utente autenticato
+            }
+        }
     }
 }
