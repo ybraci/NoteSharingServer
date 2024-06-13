@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 data class MaterialeDigitale(
     var id: String,
     var annoRiferimento: Int,
-    var nomeCorso: String,
+    var areaMateriale: Int,
     var descrizioneMateriale: String
 ) {
     //in kotlin ci sono in automatico i getters e setters

@@ -7,7 +7,7 @@ data class MaterialeFisico(
     var id: String,
     var costo: Int,
     var annoRiferimento: Int,
-    var nomeCorso: String,
+    var areaMateriale: Int,
     var descrizioneMateriale: String,
     var comune: String,
     var provincia: String,
