@@ -1,6 +1,5 @@
 package com.example.comandiSQL
 
-import com.example.data.Annuncio
 import com.example.data.MaterialeFisico
 import com.example.database.Database
 import java.sql.PreparedStatement
@@ -17,7 +16,7 @@ class ComandiMaterialeFisico(dbms: Database) {
                     setString(1, mFisico.id)
                     setInt(2, mFisico.costo)
                     setInt(3, mFisico.annoRiferimento)
-                    setString(4, mFisico.nomeCorso)
+                    setInt(4, mFisico.areaMateriale)
                     setString(5, mFisico.descrizioneMateriale)
                     setString(6, mFisico.provincia)
                     setString(7, mFisico.comune)
@@ -54,7 +53,7 @@ class ComandiMaterialeFisico(dbms: Database) {
                 result.getString("id"),
                 result.getInt("costo"),
                 result.getInt("annoRif"),
-                result.getString("nomeCorso"),
+                result.getInt("areaMateriale"),
                 result.getString("descrizioneMateriale"),
                 result.getString("comune"),
                 result.getString("provincia"),

@@ -17,7 +17,7 @@ class ComandiMaterialeDigitale(dbms: Database){
                 prepared?.apply {
                     setString(1, mDigitale.id)
                     setInt(2, mDigitale.annoRiferimento)
-                    setString(3, mDigitale.nomeCorso)
+                    setInt(3, mDigitale.areaMateriale)
                     setString(4, mDigitale.descrizioneMateriale)
 
                     executeUpdate()
@@ -48,7 +48,7 @@ class ComandiMaterialeDigitale(dbms: Database){
             materialeD = MaterialeDigitale(
                 result.getString("id"),
                 result.getInt("annoRif"),
-                result.getString("nomeCorso"),
+                result.getInt("areaMateriale"),
                 result.getString("descrizioneMateriale")
             )
         }

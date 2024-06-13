@@ -15,5 +15,14 @@ data class MaterialeFisico(
     var numeroCivico: Int,
     var cap: Int
 ) {
-
+    override fun toString(): String {
+        return when (this.areaMateriale) {
+            1 -> "Area Sportiva"
+            2 -> "Area Giuridico-Economica"
+            3 -> "Area Sanitaria"
+            4 -> "Area Scientifica"
+            5 -> "Area delle Scienze Umane e Sociali"
+            else -> "Unknown Area"
+        }
+    }
 }
