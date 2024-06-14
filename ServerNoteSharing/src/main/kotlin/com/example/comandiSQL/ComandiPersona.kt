@@ -6,6 +6,11 @@ import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.SQLException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.util.*
+
 
 /**
  * Classe che contiene tutti i metodi che comunicano con la tabella *UtentiRegistrati* della base di dati, effettuando inserimenti, aggiornamenti e interrogazioni.
@@ -35,36 +40,25 @@ class ComandiPersona(dbms: Database) {
      */
     @Throws(SQLException::class)
     fun signUp(
-        username: String?,
-        email: String?,
-        password: String?,
-        cf: String?,
-        nome: String?,
-        cognome: String?,
-        provincia: String?,
-        comune: String?,
-        via: String?,
-        nrCivico: Int,
-        cap: Int,
-        dataN: Date?
+        persona:Persona
     ) {
         try {
             database.getConnection()?.apply {
                 autoCommit = false
                 val prepared: PreparedStatement? = prepareStatement("INSERT INTO Persona VALUES (?,?,?,?,?,?,?,?,?,?,?,?)")
                 prepared?.apply {
-                    setString(1, username)
-                    setString(2, email)
-                    setString(3, password)
-                    setString(4, cf)
-                    setString(5, nome)
-                    setString(6, cognome)
-                    setString(7, provincia)
-                    setString(8, comune)
-                    setString(9, via)
-                    setInt(10, nrCivico)
-                    setInt(11, cap)
-                    setDate(12, dataN)
+                    setString(1, persona.username)
+                    setString(2, persona.email)
+                    setString(3, persona.password)
+                    setString(4, persona.cf)
+                    setString(5, persona.nome)
+                    setString(6, persona.cognome)
+                    setString(7, persona.provincia)
+                    setString(8, persona.comune)
+                    setString(9, persona.via)
+                    setInt(10, persona.nrCivico)
+                    setInt(11, persona.cap)
+                    setDate(12, parseDate(persona.dataN))
 
                     executeUpdate()
                     close() // Close the PreparedStatement
@@ -80,6 +74,21 @@ class ComandiPersona(dbms: Database) {
             database.getConnection()?.autoCommit = true
         }
     }
+    fun parseDate(date: String): Date {
+        val formats = arrayOf("dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd", "yyyy/MM/dd")
+        for (f in formats){
+            try {
+                return Date(SimpleDateFormat(f).parse(date).time)
+
+            }catch (e: Exception) {
+                // Continue to next format if parsing fails
+                continue
+            }
+        }
+        // If none of the formats matched, throw an IllegalArgumentException
+        throw IllegalArgumentException("Invalid date format: $date")
+    }
+
 
     /**
      * Metodo che effettua un aggiornamento della password nella tabella *Persona* per un utente. ('E una transazione).

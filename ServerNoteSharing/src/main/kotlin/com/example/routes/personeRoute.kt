@@ -11,6 +11,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import kotlinx.serialization.json.Json
 import java.sql.Date
 import java.sql.SQLException
 
@@ -34,24 +35,15 @@ fun Route.personeRoute(database: Database) {
             if (comandiPersona.isUsernameTaken(request.username)) {
                 call.respond(HttpStatusCode.Conflict, mapOf("message" to "Username already in use"))
             } else {
-                comandiPersona.signUp(
-                    username = request.username,
-                    email = request.email,
-                    password = request.password,
-                    cf = request.cf,
-                    nome = request.nome,
-                    cognome = request.cognome,
-                    provincia = request.provincia,
-                    comune = request.comune,
-                    via = request.via,
-                    nrCivico = request.nrCivico,
-                    cap = request.cap.toInt(),
-                    dataN = Date.valueOf(request.dataN)
-                )
+                comandiPersona.signUp(request)
                 call.respond(HttpStatusCode.Created, mapOf("message" to "User registered successfully"))
             }
         } catch (e: SQLException) {
+            println("SQLException during user signup: ${e.message}")
             call.respond(HttpStatusCode.InternalServerError, mapOf("message" to "Error during registration: ${e.message}"))
+        } catch (e: Exception) {
+            println("Exception during user signup: ${e.message}")
+            call.respond(HttpStatusCode.InternalServerError, mapOf("message" to "Unexpected error during registration: ${e.message}"))
         }
     }
 

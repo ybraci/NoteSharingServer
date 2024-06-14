@@ -7,7 +7,6 @@ import com.example.comandiSQL.ComandiPersona
 import com.example.data.Annuncio
 import com.example.data.MaterialeDigitale
 import com.example.data.MaterialeFisico
-import com.example.data.Persona
 import com.example.database.Database
 import io.ktor.http.*
 import io.ktor.http.content.*
