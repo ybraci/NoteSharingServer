@@ -20,8 +20,8 @@ class ComandiAnnuncio(dbms: Database){
                     setString(2, annuncio.titolo)
                     setDate(3, java.sql.Date(SimpleDateFormat("yyyy-MM-dd").parse(annuncio.data).time)) //"2024-05-13"
                     setString(4, annuncio.descrizioneAnnuncio)
-                    setBoolean(5, annuncio.tipoMateriale)
-                    setString(6, annuncio.idProprietario)
+                    setString(5, annuncio.idProprietario)
+                    setBoolean(6, annuncio.tipoMateriale)
                     setInt(7, annuncio.areaAnnuncio)
 
                     executeUpdate()
