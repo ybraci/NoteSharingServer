@@ -16,12 +16,12 @@ class ComandiMaterialeFisico(dbms: Database) {
                     setString(1, mFisico.id)
                     setInt(2, mFisico.costo)
                     setInt(3, mFisico.annoRiferimento)
-                    setString(5, mFisico.descrizioneMateriale)
-                    setString(6, mFisico.provincia)
-                    setString(7, mFisico.comune)
-                    setString(8, mFisico.via)
-                    setInt(9, mFisico.numeroCivico)
-                    setInt(10, mFisico.cap)
+                    setString(4, mFisico.descrizioneMateriale)
+                    setString(5, mFisico.provincia)
+                    setString(6, mFisico.comune)
+                    setString(7, mFisico.via)
+                    setInt(8, mFisico.numeroCivico)
+                    setInt(9, mFisico.cap)
 
                     executeUpdate()
                     close() // Close the PreparedStatement
@@ -53,8 +53,8 @@ class ComandiMaterialeFisico(dbms: Database) {
                 result.getInt("costo"),
                 result.getInt("annoRif"),
                 result.getString("descrizioneMateriale"),
-                result.getString("comune"),
                 result.getString("provincia"),
+                result.getString("comune"),
                 result.getString("via"),
                 result.getInt("nrCivico"),
                 result.getInt("cap")

@@ -20,8 +20,8 @@ class ComandiAnnuncio(dbms: Database){
                     setString(2, annuncio.titolo)
                     setDate(3, java.sql.Date(SimpleDateFormat("yyyy-MM-dd").parse(annuncio.data).time)) //"2024-05-13"
                     setString(4, annuncio.descrizioneAnnuncio)
-                    setString(5, annuncio.idProprietario)
-                    setBoolean(6, annuncio.tipoMateriale)
+                    setBoolean(5, annuncio.tipoMateriale)
+                    setString(6, annuncio.idProprietario)
                     setInt(7, annuncio.areaAnnuncio)
 
                     executeUpdate()
@@ -38,6 +38,7 @@ class ComandiAnnuncio(dbms: Database){
             database.getConnection()?.autoCommit = true
         }
     }
+
     fun getListaAnnunci(): ArrayList<Annuncio> {
         val query = ("SELECT * "
                 + "FROM Annuncio ;")
