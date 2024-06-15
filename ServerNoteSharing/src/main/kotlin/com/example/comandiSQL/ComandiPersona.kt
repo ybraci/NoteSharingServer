@@ -74,7 +74,7 @@ class ComandiPersona(dbms: Database) {
             database.getConnection()?.autoCommit = true
         }
     }
-    fun parseDate(date: String): Date {
+    private fun parseDate(date: String): Date {
         val formats = arrayOf("dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd", "yyyy/MM/dd")
         for (f in formats){
             try {

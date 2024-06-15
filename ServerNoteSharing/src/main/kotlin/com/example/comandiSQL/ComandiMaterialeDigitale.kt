@@ -13,12 +13,11 @@ class ComandiMaterialeDigitale(dbms: Database){
         try {
             database.getConnection()?.apply {
                 autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("INSERT INTO MaterialeDigitale VALUES (?, ?, ?, ?)")
+                val prepared: PreparedStatement? = prepareStatement("INSERT INTO MaterialeDigitale VALUES (?, ?, ?)")
                 prepared?.apply {
                     setString(1, mDigitale.id)
                     setInt(2, mDigitale.annoRiferimento)
-                    setInt(3, mDigitale.areaMateriale)
-                    setString(4, mDigitale.descrizioneMateriale)
+                    setString(3, mDigitale.descrizioneMateriale)
 
                     executeUpdate()
                     close() // Close the PreparedStatement
@@ -48,7 +47,6 @@ class ComandiMaterialeDigitale(dbms: Database){
             materialeD = MaterialeDigitale(
                 result.getString("id"),
                 result.getInt("annoRif"),
-                result.getInt("areaMateriale"),
                 result.getString("descrizioneMateriale")
             )
         }

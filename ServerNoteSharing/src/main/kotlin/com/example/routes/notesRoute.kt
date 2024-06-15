@@ -45,9 +45,7 @@ fun Route.notesRoute(database: Database) {
     post("/uploadAnnuncio"){
         val annuncio = call.receive<Annuncio>()
         call.respond(HttpStatusCode.OK, "Annuncio received successfully")
-        // ComandiPersona(database).InsertUser("pippo", "pippo", "pippo", "pippo", "pippo", "pippo", "pippo", "pippo", 20, 21011, java.sql.Date.valueOf("2024-05-11"))
         ComandiAnnuncio(database).InsertAdv(annuncio)
-        //ComandiAnnuncio(database).InsertAdv(Annuncio("prova1esempioAnnuncio", "Esempio", "2024-04-12", "provaDescrizione", "pippo"))
     }
 
     post("/uploadMD"){

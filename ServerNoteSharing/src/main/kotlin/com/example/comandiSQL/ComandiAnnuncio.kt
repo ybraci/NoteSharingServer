@@ -14,7 +14,7 @@ class ComandiAnnuncio(dbms: Database){
         try {
             database.getConnection()?.apply {
                 autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Annuncio VALUES (?,?,?,?,?,?)")
+                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Annuncio VALUES (?,?,?,?,?,?,?)")
                 prepared?.apply {
                     setString(1, annuncio.id)
                     setString(2, annuncio.titolo)
@@ -22,6 +22,7 @@ class ComandiAnnuncio(dbms: Database){
                     setString(4, annuncio.descrizioneAnnuncio)
                     setString(5, annuncio.idProprietario)
                     setBoolean(6, annuncio.tipoMateriale)
+                    setInt(7, annuncio.areaAnnuncio)
 
                     executeUpdate()
                     close() // Close the PreparedStatement
@@ -51,7 +52,8 @@ class ComandiAnnuncio(dbms: Database){
                 result.getDate("data").toString(),
                 result.getString("descrizioneAnnuncio"),
                 result.getBoolean("tipoMateriale"),
-                result.getString("idProprietarioPersona")
+                result.getString("idProprietarioPersona"),
+                result.getInt("areaAnnuncio")
                 ))
         }
         result.close()

@@ -11,12 +11,11 @@ class ComandiMaterialeFisico(dbms: Database) {
         try {
             database.getConnection()?.apply {
                 autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("INSERT INTO MaterialeFisico VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                val prepared: PreparedStatement? = prepareStatement("INSERT INTO MaterialeFisico VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 prepared?.apply {
                     setString(1, mFisico.id)
                     setInt(2, mFisico.costo)
                     setInt(3, mFisico.annoRiferimento)
-                    setInt(4, mFisico.areaMateriale)
                     setString(5, mFisico.descrizioneMateriale)
                     setString(6, mFisico.provincia)
                     setString(7, mFisico.comune)
@@ -53,7 +52,6 @@ class ComandiMaterialeFisico(dbms: Database) {
                 result.getString("id"),
                 result.getInt("costo"),
                 result.getInt("annoRif"),
-                result.getInt("areaMateriale"),
                 result.getString("descrizioneMateriale"),
                 result.getString("comune"),
                 result.getString("provincia"),
