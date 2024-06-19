@@ -64,13 +64,18 @@ fun Route.notesRoute(database: Database) {
     get("/listaAnnunci"){
         val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getListaAnnunci()
         call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
-        //forse potrebbe essere utile salvarli localmente per motivi di efficienza
-        //e poi aggiornarli in detterminati momenti ppure quando l'utente clicca il bottone
     }
 
     get("/listaAnnunciSalvati"){
-        val listaA: ArrayList<String> = ComandiAnnunciSalvati(database).getIdAnnunciSalvati()
-        call.respond(HttpStatusCode.OK, ComandiAnnuncio(database).getAnnunciById(listaA))
+        try {
+            val listaA: ArrayList<String> = ComandiAnnunciSalvati(database).getIdAnnunciSalvati()
+            val annunci: ArrayList<Annuncio> = ComandiAnnuncio(database).getAnnunciById(listaA)
+            call.respond(HttpStatusCode.OK, annunci)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError, "Failed to retrieve saved announcements: ${e.message}")
+            // Log the exception for further investigation
+            application.log.error("Failed to retrieve saved announcements", e)
+        }
     }
 
     get("/materialeFisicoAssociatoAnnuncio"){
