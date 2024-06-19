@@ -1,9 +1,6 @@
 package com.example.routes
 
-import com.example.comandiSQL.ComandiAnnuncio
-import com.example.comandiSQL.ComandiMaterialeDigitale
-import com.example.comandiSQL.ComandiMaterialeFisico
-import com.example.comandiSQL.ComandiPersona
+import com.example.comandiSQL.*
 import com.example.data.Annuncio
 import com.example.data.MaterialeDigitale
 import com.example.data.MaterialeFisico
@@ -63,12 +60,19 @@ fun Route.notesRoute(database: Database) {
     get("/getPDFs"){
 
     }
+
     get("/listaAnnunci"){
         val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getListaAnnunci()
         call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
         //forse potrebbe essere utile salvarli localmente per motivi di efficienza
         //e poi aggiornarli in detterminati momenti ppure quando l'utente clicca il bottone
     }
+
+    get("/listaAnnunciSalvati"){
+        val listaA: ArrayList<String> = ComandiAnnunciSalvati(database).getIdAnnunciSalvati()
+        call.respond(HttpStatusCode.OK, ComandiAnnuncio(database).getAnnunciById(listaA))
+    }
+
     get("/materialeFisicoAssociatoAnnuncio"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
         //val idAnnuncio = "47f539ab-2cb5-4665-83bc-7b7bd0ebcbea"

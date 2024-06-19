@@ -62,4 +62,61 @@ class ComandiAnnuncio(dbms: Database){
         return listaA
     }
 
+    /*fun getAnnunciById(liste_a_id: ArrayList<String>): ArrayList<Annuncio> {
+        val listaA: ArrayList<Annuncio> = ArrayList()
+        for (a_id in liste_a_id) {
+            val query = ("SELECT * "
+                    + "FROM Annuncio"
+                    + "WHERE id = ? ;")
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement.setString(1, a_id)
+            val result = preparedStatement.executeQuery()
+
+            while (result.next()) {
+                listaA.add(Annuncio(result.getString("id"),
+                    result.getString("titolo"),
+                    result.getDate("data").toString(),
+                    result.getString("descrizioneAnnuncio"),
+                    result.getBoolean("tipoMateriale"),
+                    result.getString("idProprietarioPersona"),
+                    result.getInt("areaAnnuncio")
+                ))
+            }
+            result.close()
+            preparedStatement.close()
+        }
+        return listaA
+    }*/
+
+    fun getAnnunciById(liste_a_id: ArrayList<String>): ArrayList<Annuncio> {
+        val listaA: ArrayList<Annuncio> = ArrayList()
+        val query = "SELECT * FROM Annuncio WHERE id = ?;"
+
+        val connection = database.getConnection()
+        if (connection != null) {
+            val preparedStatement = connection.prepareStatement(query)
+
+            for (a_id in liste_a_id) {
+                preparedStatement.setString(1, a_id)
+                val result = preparedStatement.executeQuery()
+
+                while (result.next()) {
+                    listaA.add(Annuncio(
+                        result.getString("id"),
+                        result.getString("titolo"),
+                        result.getDate("data").toString(),
+                        result.getString("descrizioneAnnuncio"),
+                        result.getBoolean("tipoMateriale"),
+                        result.getString("idProprietarioPersona"),
+                        result.getInt("areaAnnuncio")
+                    ))
+                }
+                result.close()
+            }
+            preparedStatement.close()
+            connection.close()
+        }
+        return listaA
+    }
+
 }
