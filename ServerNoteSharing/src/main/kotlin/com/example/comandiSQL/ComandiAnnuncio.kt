@@ -9,12 +9,12 @@ import java.text.SimpleDateFormat
 class ComandiAnnuncio(dbms: Database){
     private var database: Database = dbms
 
-    fun InsertAdv(annuncio: Annuncio){
+    fun insertAdv(annuncio: Annuncio){
 
         try {
             database.getConnection()?.apply {
                 autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Annuncio VALUES (?,?,?,?,?,?,?)")
+                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Annuncio VALUES (?,?,?,?,?,?,?,?)")
                 prepared?.apply {
                     setString(1, annuncio.id)
                     setString(2, annuncio.titolo)
@@ -23,6 +23,7 @@ class ComandiAnnuncio(dbms: Database){
                     setString(5, annuncio.idProprietario)
                     setBoolean(6, annuncio.tipoMateriale)
                     setInt(7, annuncio.areaAnnuncio)
+                    setBoolean(8, annuncio.preferito)
 
                     executeUpdate()
                     close() // Close the PreparedStatement
@@ -54,7 +55,8 @@ class ComandiAnnuncio(dbms: Database){
                 result.getString("descrizioneAnnuncio"),
                 result.getBoolean("tipoMateriale"),
                 result.getString("idProprietarioPersona"),
-                result.getInt("areaAnnuncio")
+                result.getInt("areaAnnuncio"),
+                result.getBoolean("preferito")
                 ))
         }
         result.close()
@@ -62,68 +64,34 @@ class ComandiAnnuncio(dbms: Database){
         return listaA
     }
 
-    fun getAnnunciById(listaid: ArrayList<String>): ArrayList<Annuncio> {
+    fun getAnnunciPreferiti(username: String): ArrayList<Annuncio> {
         val listaA: ArrayList<Annuncio> = ArrayList()
-        for (a_id in listaid) {
-            val query = ("SELECT * "
-                    + "FROM Annuncio "
-                    + "WHERE id = ? ;")
-            val preparedStatement = database.getConnection()!!.prepareStatement(query)
-            preparedStatement?.apply {
-                setString(1, a_id)
-            }
 
-            val result = preparedStatement.executeQuery()
-            while (result.next()) {
-                listaA.add(Annuncio(result.getString("id"),
-                    result.getString("titolo"),
-                    result.getDate("data").toString(),
-                    result.getString("descrizioneAnnuncio"),
-                    result.getBoolean("tipoMateriale"),
-                    result.getString("idProprietarioPersona"),
-                    result.getInt("areaAnnuncio")
-                ))
-            }
-            result.close()
-            preparedStatement.close()
-        }
-        return listaA
-    }
-    
-    /*
-    fun getAnnunciById(liste_a_id: ArrayList<String>): ArrayList<Annuncio> {
-        val listaA: ArrayList<Annuncio> = ArrayList()
         val query = ("SELECT * "
-                + "FROM Annuncio"
-                + "WHERE id = ? ;")
-
-        val connection = database.getConnection()
-        if (connection != null) {
-            val preparedStatement = connection.prepareStatement(query)
-
-            for (a_id in liste_a_id) {
-                preparedStatement.setString(1, a_id)
-                val result = preparedStatement.executeQuery()
-
-                while (result.next()) {
-                    listaA.add(Annuncio(
-                        result.getString("id"),
-                        result.getString("titolo"),
-                        result.getDate("data").toString(),
-                        result.getString("descrizioneAnnuncio"),
-                        result.getBoolean("tipoMateriale"),
-                        result.getString("idProprietarioPersona"),
-                        result.getInt("areaAnnuncio")
-                    ))
-                }
-                result.close()
-            }
-            preparedStatement.close()
-            connection.close()
+                + "FROM Annuncio "
+                + "WHERE idProprietarioPersona = ? AND preferito = true ;")
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        preparedStatement?.apply {
+            setString(1, username)
         }
+        val result = preparedStatement.executeQuery()
+
+        while (result.next()) {
+            listaA.add(Annuncio(result.getString("id"),
+                result.getString("titolo"),
+                result.getDate("data").toString(),
+                result.getString("descrizioneAnnuncio"),
+                result.getBoolean("tipoMateriale"),
+                result.getString("idProprietarioPersona"),
+                result.getInt("areaAnnuncio"),
+                result.getBoolean("preferito")
+            ))
+        }
+
+        result.close()
+        preparedStatement.close()
+
         return listaA
     }
-    
-     */
 
 }
