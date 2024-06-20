@@ -94,4 +94,29 @@ class ComandiAnnuncio(dbms: Database){
         return listaA
     }
 
+    // sets the attribute preferito as true
+    fun updatePreferito(idAnnuncio: String, preferito: Boolean) {
+        try {
+            database.getConnection()?.apply {
+                autoCommit = false
+                val query = ("UPDATE annuncio SET preferito = ? WHERE id = ? ;")
+                val prepared: PreparedStatement? = prepareStatement(query)
+                prepared?.apply {
+                    setBoolean(1, preferito)
+                    setString(2, idAnnuncio)
+                    executeUpdate()
+                }
+                close() // Close the PreparedStatement
+                commit() // Commit the transaction
+            }
+        } catch (e: SQLException) {
+            // Rollback the transaction in case of any exception
+            database.getConnection()?.rollback()
+            throw e
+        } finally {
+            // Set auto-commit back to true after the transaction is done
+            database.getConnection()?.autoCommit = true
+        }
+    }
+
 }

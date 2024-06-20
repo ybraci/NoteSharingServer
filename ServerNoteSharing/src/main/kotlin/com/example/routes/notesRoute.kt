@@ -61,6 +61,18 @@ fun Route.notesRoute(database: Database) {
 
     }
 
+    post("/salvaAnnuncioComePreferito"){
+        val idA = call.receive<String>()
+        //aggiorno l'attributo preferito a true
+        ComandiAnnuncio(database).updatePreferito(idA, true)
+    }
+    post("/eliminaAnnuncioComePreferito"){
+        val idA = call.receive<String>()
+        println("++++++++++++++++++++++++++++ $idA")
+        //aggiorno l'attributo preferito a true
+        ComandiAnnuncio(database).updatePreferito(idA, false)
+    }
+
     get("/listaAnnunci"){
         val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getListaAnnunci()
         call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
