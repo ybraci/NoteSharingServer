@@ -72,9 +72,18 @@ fun Route.notesRoute(database: Database) {
         //aggiorno l'attributo preferito a true
         ComandiAnnuncio(database).updatePreferito(idA, false)
     }
+    post("/eliminaAnnuncio"){
+        val idA = call.receive<String>()
+        ComandiAnnuncio(database).eliminaAnnuncio(idA)
+    }
 
     get("/listaAnnunci"){
         val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getListaAnnunci()
+        call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
+    }
+    get("/myAnnunci"){
+        val username = call.request.queryParameters["username"].toString()
+        val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getUsernameAnnunci(username)
         call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
     }
 
@@ -92,6 +101,7 @@ fun Route.notesRoute(database: Database) {
 
     get("/materialeFisicoAssociatoAnnuncio"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
+
         if (idAnnuncio != null) {
             try {
                 val materiale = ComandiMaterialeFisico(database).getMF(idAnnuncio)

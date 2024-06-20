@@ -2,9 +2,11 @@ package com.example.comandiSQL
 
 import com.example.data.Annuncio
 import com.example.database.Database
+import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.SQLException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 class ComandiAnnuncio(dbms: Database){
     private var database: Database = dbms
@@ -117,6 +119,59 @@ class ComandiAnnuncio(dbms: Database){
             // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
+
+    }
+
+    fun eliminaAnnuncio(idA: String) {
+        try {
+            database.getConnection()?.apply {
+                autoCommit = false
+                val query = ("DELETE FROM annuncio WHERE id = ? ;")
+                //in cascade viene eliminato anche il corrispondente materiale
+                val prepared: PreparedStatement? = prepareStatement(query)
+                prepared?.apply {
+                    setString(1, idA)
+                    executeUpdate()
+                }
+                close() // Close the PreparedStatement
+                commit() // Commit the transaction
+            }
+        } catch (e: SQLException) {
+            // Rollback the transaction in case of any exception
+            database.getConnection()?.rollback()
+            throw e
+        } finally {
+            // Set auto-commit back to true after the transaction is done
+            database.getConnection()?.autoCommit = true
+        }
+    }
+
+    fun getUsernameAnnunci(username: String): ArrayList<Annuncio> {
+        val query = ("SELECT * FROM Annuncio WHERE idProprietarioPersona = ?;")
+        val listaA: ArrayList<Annuncio> = ArrayList()
+
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        preparedStatement?.apply {
+            setString(1, username)
+        }
+        val result = preparedStatement.executeQuery()
+
+        while (result.next()) {
+            listaA.add(Annuncio(result.getString("id"),
+                result.getString("titolo"),
+                result.getDate("data").toString(),
+                result.getString("descrizioneAnnuncio"),
+                result.getBoolean("tipoMateriale"),
+                result.getString("idProprietarioPersona"),
+                result.getInt("areaAnnuncio"),
+                result.getBoolean("preferito")
+            ))
+        }
+
+        result.close()
+        preparedStatement.close()
+
+        return listaA
     }
 
 }
