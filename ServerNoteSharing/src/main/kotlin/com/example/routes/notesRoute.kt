@@ -62,13 +62,15 @@ fun Route.notesRoute(database: Database) {
     }
 
     post("/salvaAnnuncioComePreferito"){
-        val idA = call.receive<String>()
+        val idA = call.receive<String>().trim('"')
+        //println("++++++++++++++++++++++++++++++++++++++++++++++++++++++ $idA")
+        println("Hex representation: " + idA.toByteArray().joinToString("") { "%02x".format(it) })
         //aggiorno l'attributo preferito a true
         ComandiAnnuncio(database).updatePreferito(idA, true)
     }
     post("/eliminaAnnuncioComePreferito"){
-        val idA = call.receive<String>()
-        println("++++++++++++++++++++++++++++ $idA")
+        val idA = call.receive<String>().trim('"')
+        //println("++++++++++++++++++++++++++++ $idA")
         //aggiorno l'attributo preferito a true
         ComandiAnnuncio(database).updatePreferito(idA, false)
     }

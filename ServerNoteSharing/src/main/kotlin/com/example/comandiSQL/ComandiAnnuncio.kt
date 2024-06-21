@@ -2,9 +2,7 @@ package com.example.comandiSQL
 
 import com.example.data.Annuncio
 import com.example.database.Database
-import java.sql.Date
-import java.sql.PreparedStatement
-import java.sql.SQLException
+import java.sql.*
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -66,6 +64,7 @@ class ComandiAnnuncio(dbms: Database){
         return listaA
     }
 
+
     fun getAnnunciPreferiti(username: String): ArrayList<Annuncio> {
         val listaA: ArrayList<Annuncio> = ArrayList()
 
@@ -96,6 +95,67 @@ class ComandiAnnuncio(dbms: Database){
         return listaA
     }
 
+     /*
+    //Versione chatgpt
+    fun getAnnunciPreferiti(username: String): ArrayList<Annuncio> {
+        val listaA: ArrayList<Annuncio> = ArrayList()
+        var connection: Connection? = null
+        var preparedStatement: PreparedStatement? = null
+        var result: ResultSet? = null
+
+        try {
+            connection = database.getConnection()
+            if (connection == null || connection.isClosed) {
+                throw SQLException("Failed to obtain a valid connection.")
+            }
+
+            val query = ("SELECT * FROM Annuncio WHERE idProprietarioPersona = ? AND preferito = true ;")
+            preparedStatement = connection.prepareStatement(query)
+            preparedStatement.setString(1, username)
+
+            result = preparedStatement.executeQuery()
+
+            while (result.next()) {
+                listaA.add(Annuncio(
+                    result.getString("id"),
+                    result.getString("titolo"),
+                    result.getDate("data").toString(),
+                    result.getString("descrizioneAnnuncio"),
+                    result.getBoolean("tipoMateriale"),
+                    result.getString("idProprietarioPersona"),
+                    result.getInt("areaAnnuncio"),
+                    result.getBoolean("preferito")
+                ))
+            }
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            throw e
+        } finally {
+            try {
+                result?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+            try {
+                preparedStatement?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+            try {
+                connection?.close()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        }
+
+        return listaA
+    }
+
+      */
+
+
+
+    /*
     // sets the attribute preferito as true
     fun updatePreferito(idAnnuncio: String, preferito: Boolean) {
         try {
@@ -121,6 +181,48 @@ class ComandiAnnuncio(dbms: Database){
         }
 
     }
+     */
+
+    //Solo questa versione non comporta la chiusura della connesione dal parte del db
+    fun updatePreferito(idAnnuncio: String, preferito: Boolean) {
+        var connection: Connection? = null
+        var preparedStatement: PreparedStatement? = null
+
+        try {
+            connection = database.getConnection()
+            if (connection == null || connection.isClosed) {
+                throw SQLException("Failed to obtain a valid connection.")
+            }
+
+            connection.autoCommit = false
+            val query = "UPDATE annuncio SET preferito = ? WHERE id = ?"
+            println("Executing query: $query with preferito=$preferito and id=$idAnnuncio")
+
+            preparedStatement = connection.prepareStatement(query)
+            preparedStatement.setBoolean(1, preferito)
+            preparedStatement.setString(2, idAnnuncio)
+
+            val rowsUpdated = preparedStatement.executeUpdate() //*********************
+            if (rowsUpdated > 0) {
+                println("Successfully updated $rowsUpdated row(s).")
+            } else {
+                println("No rows were updated. Check if idAnnuncio=$idAnnuncio exists.")
+            }
+
+            connection.commit()
+        } catch (e: SQLException) {
+            connection?.rollback()
+            e.printStackTrace()
+            throw e
+        } finally {
+            preparedStatement?.close()
+            connection?.autoCommit = true
+            connection?.close()
+        }
+    }
+
+
+
 
     fun eliminaAnnuncio(idA: String) {
         try {
