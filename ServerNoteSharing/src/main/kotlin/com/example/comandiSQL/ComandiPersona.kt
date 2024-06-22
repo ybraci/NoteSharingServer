@@ -124,68 +124,10 @@ class ComandiPersona(dbms: Database) {
         }
     }
 
-    /**
-     * Metodo che effettua una interrogazione nella tabella *UtentiRegistrati* per vedere se lo username dell'utente
-     * preso in input è già presente.
-     *
-     * @param username Username da cercare.
-     * @return Restituisce un boolean, che se e true significa che lo username e libero e se restituisce false significa che e gia presente.
-     * @throws SQLException Se si verificano errori durante l'interazione con il database.
-
-    @Throws(SQLException::class)
-    fun searchUsername(username: String?): Boolean {
-    val query = ("SELECT username "
-    + "FROM UtentiRegistrati "
-    + "WHERE username= ?;")
-    val preparedStatement: PreparedStatement = database.getConnection().prepareStatement(query)
-    preparedStatement.setString(1, username)
-
-    val result = preparedStatement.executeQuery()
-
-    var usernameTrovati = ""
-    while (result.next()) {
-    usernameTrovati = usernameTrovati + result.getString("username")
-    }
-    return usernameTrovati === ""
-    //alla fine se esiste sara unico perchè è Primary Key
-    }
-     */
-
-
-
-
-    /**
-     * Metodo che effettua una interrogazione nella tabella *UtentiRegistrati* per trovare l'utente con lo
-     * username e la password in input.
-     *
-     * @param username Username da cercare.
-     * @param password Password da cercare.
-     * @return Restituisce true se esiste nella tabella un utente con queste credenziali.
-     * @throws SQLException Se si verificano errori durante l'interazione con il database.
-    @Throws(SQLException::class)
-    fun searchUsernamePassword(username: String, password: String): Boolean {
-    val query = ("SELECT username, password "
-    + "FROM UtentiRegistrati "
-    + "WHERE username= ? AND password= ?;")
-    val preparedStatement: PreparedStatement = database.getConnection().prepareStatement(query)
-    preparedStatement.setString(1, username)
-    preparedStatement.setString(2, password)
-
-    val result = preparedStatement.executeQuery()
-
-    //String trovati = "";
-    if (result.next()) { //in realtà è solo una riga, visto che i username sono PK
-    val usernameTrovato = result.getString("username")
-    val passwordTrovato = result.getString("password")
-    if (usernameTrovato == username && passwordTrovato == password) {
-    return true //username + password corretti
-    }
-    }
-    return false
-    }
-     */
-
     fun loginUser(username: String, password: String): Boolean {
+        if(username.isBlank() || password.isBlank()){
+            return false
+        }
         val query = "SELECT username, password FROM Persona WHERE username = ? AND password = ?"
         val preparedStatement = database.getConnection()!!.prepareStatement(query)
 
