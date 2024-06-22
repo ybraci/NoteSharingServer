@@ -70,12 +70,11 @@ fun Route.notesRoute(database: Database) {
     }
     post("/eliminaAnnuncioComePreferito"){
         val idA = call.receive<String>().trim('"')
-        //println("++++++++++++++++++++++++++++ $idA")
         //aggiorno l'attributo preferito a true
         ComandiAnnuncio(database).updatePreferito(idA, false)
     }
     post("/eliminaAnnuncio"){
-        val idA = call.receive<String>()
+        val idA = call.receive<String>().trim('"')
         ComandiAnnuncio(database).eliminaAnnuncio(idA)
     }
 

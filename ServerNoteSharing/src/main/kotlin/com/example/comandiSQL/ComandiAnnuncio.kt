@@ -10,7 +10,6 @@ class ComandiAnnuncio(dbms: Database){
     private var database: Database = dbms
 
     fun insertAdv(annuncio: Annuncio){
-
         try {
             database.getConnection()?.apply {
                 autoCommit = false
@@ -95,94 +94,6 @@ class ComandiAnnuncio(dbms: Database){
         return listaA
     }
 
-     /*
-    //Versione chatgpt
-    fun getAnnunciPreferiti(username: String): ArrayList<Annuncio> {
-        val listaA: ArrayList<Annuncio> = ArrayList()
-        var connection: Connection? = null
-        var preparedStatement: PreparedStatement? = null
-        var result: ResultSet? = null
-
-        try {
-            connection = database.getConnection()
-            if (connection == null || connection.isClosed) {
-                throw SQLException("Failed to obtain a valid connection.")
-            }
-
-            val query = ("SELECT * FROM Annuncio WHERE idProprietarioPersona = ? AND preferito = true ;")
-            preparedStatement = connection.prepareStatement(query)
-            preparedStatement.setString(1, username)
-
-            result = preparedStatement.executeQuery()
-
-            while (result.next()) {
-                listaA.add(Annuncio(
-                    result.getString("id"),
-                    result.getString("titolo"),
-                    result.getDate("data").toString(),
-                    result.getString("descrizioneAnnuncio"),
-                    result.getBoolean("tipoMateriale"),
-                    result.getString("idProprietarioPersona"),
-                    result.getInt("areaAnnuncio"),
-                    result.getBoolean("preferito")
-                ))
-            }
-        } catch (e: SQLException) {
-            e.printStackTrace()
-            throw e
-        } finally {
-            try {
-                result?.close()
-            } catch (e: SQLException) {
-                e.printStackTrace()
-            }
-            try {
-                preparedStatement?.close()
-            } catch (e: SQLException) {
-                e.printStackTrace()
-            }
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                e.printStackTrace()
-            }
-        }
-
-        return listaA
-    }
-
-      */
-
-
-
-    /*
-    // sets the attribute preferito as true
-    fun updatePreferito(idAnnuncio: String, preferito: Boolean) {
-        try {
-            database.getConnection()?.apply {
-                autoCommit = false
-                val query = ("UPDATE annuncio SET preferito = ? WHERE id = ? ;")
-                val prepared: PreparedStatement? = prepareStatement(query)
-                prepared?.apply {
-                    setBoolean(1, preferito)
-                    setString(2, idAnnuncio)
-                    executeUpdate()
-                }
-                close() // Close the PreparedStatement
-                commit() // Commit the transaction
-            }
-        } catch (e: SQLException) {
-            // Rollback the transaction in case of any exception
-            database.getConnection()?.rollback()
-            throw e
-        } finally {
-            // Set auto-commit back to true after the transaction is done
-            database.getConnection()?.autoCommit = true
-        }
-
-    }
-     */
-
     //Solo questa versione non comporta la chiusura della connesione dal parte del db
     fun updatePreferito(idAnnuncio: String, preferito: Boolean) {
         var connection: Connection? = null
@@ -221,43 +132,39 @@ class ComandiAnnuncio(dbms: Database){
         }
     }
 
-
-
-
     fun eliminaAnnuncio(idA: String) {
+        val query = "DELETE FROM annuncio WHERE id = ?;"
+        var connection: Connection? = null
+        var preparedStatement: PreparedStatement? = null
         try {
-            database.getConnection()?.apply {
-                autoCommit = false
-                val query = ("DELETE FROM annuncio WHERE id = ? ;")
-                //in cascade viene eliminato anche il corrispondente materiale
-                val prepared: PreparedStatement? = prepareStatement(query)
-                prepared?.apply {
-                    setString(1, idA)
-                    executeUpdate()
-                }
-                close() // Close the PreparedStatement
-                commit() // Commit the transaction
+            connection = database.getConnection()
+            if (connection == null || connection.isClosed) {
+                throw SQLException("Failed to obtain a valid connection.")
             }
+            preparedStatement = connection.prepareStatement(query)
+            preparedStatement.setString(1, idA)
+            println("Set idA to PreparedStatement: $idA")
+            val rowsAffected = preparedStatement.executeUpdate()
+            println("Execute update completed. Rows affected: $rowsAffected")
         } catch (e: SQLException) {
-            // Rollback the transaction in case of any exception
-            database.getConnection()?.rollback()
+            println("SQLException caught: ${e.message}")
+            e.printStackTrace()
             throw e
         } finally {
-            // Set auto-commit back to true after the transaction is done
-            database.getConnection()?.autoCommit = true
+            preparedStatement?.close()
+            println("PreparedStatement closed")
         }
     }
+
 
     fun getUsernameAnnunci(username: String): ArrayList<Annuncio> {
         val query = ("SELECT * FROM Annuncio WHERE idProprietarioPersona = ?;")
         val listaA: ArrayList<Annuncio> = ArrayList()
-
         val preparedStatement = database.getConnection()!!.prepareStatement(query)
         preparedStatement?.apply {
             setString(1, username)
         }
         val result = preparedStatement.executeQuery()
-
         while (result.next()) {
             listaA.add(Annuncio(result.getString("id"),
                 result.getString("titolo"),
@@ -269,10 +176,8 @@ class ComandiAnnuncio(dbms: Database){
                 result.getBoolean("preferito")
             ))
         }
-
         result.close()
         preparedStatement.close()
-
         return listaA
     }
 
