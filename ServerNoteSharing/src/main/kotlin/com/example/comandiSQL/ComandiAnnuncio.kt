@@ -217,7 +217,7 @@ class ComandiAnnuncio(dbms: Database){
         } finally {
             preparedStatement?.close()
             connection?.autoCommit = true
-            connection?.close()
+            // connection?.close()
         }
     }
 
