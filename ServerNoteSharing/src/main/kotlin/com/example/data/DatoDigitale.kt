@@ -4,8 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class DatoDigitale (
-    var id: String,
-    var fileBytes: ByteArray,
-    var fileName: String
+    val idDato: String,
+    val idAnnuncio: String,
+    val fileBytes: ByteArray,
+    val fileName: String
 ){
 }

@@ -2,6 +2,7 @@ package com.example.routes
 
 import com.example.comandiSQL.*
 import com.example.data.Annuncio
+import com.example.data.DatoDigitale
 import com.example.data.MaterialeDigitale
 import com.example.data.MaterialeFisico
 import com.example.database.Database
@@ -15,28 +16,31 @@ import java.io.File
 
 fun Route.notesRoute(database: Database) {
     post("/uploadPdf") {
-        val multipart = call.receiveMultipart()
-        var fileBytes: ByteArray? = null
-        var fileName: String? = null
-        multipart.forEachPart { part ->
-            when (part) {
-                is PartData.FileItem -> {
-                    fileBytes = part.streamProvider().readBytes()
-                    fileName = part.originalFileName
-                }
-                // Handle other form fields if needed
-                else -> {
-                    // Do nothing or handle other fields
-                }
-            }
+        val datoDigitale = call.receive<DatoDigitale>()
+        println("****************************************************************** Dato digitale reciever: $datoDigitale")
+        //Save nel db
+        if (datoDigitale.idDato.isNotBlank()){ // se faccio datoDigitale|=null mi dice che sarà sempre true
+            ComandiDatoDigitale(database).insertPDFtoDatoDigitale(datoDigitale)
+            ComandiDatoDigitale(database).insertPDFtoHA(datoDigitale)
+            call.respond(HttpStatusCode.OK, "File uploaded successfully")
+        }else{
+            //Gestire il caso
+            call.respond(HttpStatusCode.NoContent, "File uploaded Unsuccessfully because the fileBytes or the name are missing")
         }
-        // Save the file if needed
-        fileBytes?.let {
-            val file = File("C:/Users/david/Downloads/$fileName.pdf")
-            file.writeBytes(it)
-        }
-        call.respond(HttpStatusCode.OK, "File uploaded successfully")
+
     }
+    get("/getPDFs"){
+        val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
+        println("**************** id snnuncio ricevuto: $idAnnuncio")
+        try{
+            var pdf = ComandiDatoDigitale(database).getPDF("e9d5ed1c-2288-4c90-a5eb-4eb7ccdaead3")
+            call.respond(HttpStatusCode.OK, pdf)
+        }catch (e:NoSuchElementException) {
+            e.printStackTrace()
+        }
+
+    }
+
 
     //prima di fare upload annuncio, bisogna inserire l'utente e che l'id della persona in ComandiAnnuncio.InsertAdv sia uguale alla mail di ComandiPersona.InsertUser
     post("/uploadAnnuncio"){
@@ -55,10 +59,6 @@ fun Route.notesRoute(database: Database) {
         val mFisico = call.receive<MaterialeFisico>()
         call.respond(HttpStatusCode.OK, "Annuncio received successfully")
         ComandiMaterialeFisico(database).insertMF(mFisico)
-    }
-
-    get("/getPDFs"){
-
     }
 
     post("/salvaAnnuncioComePreferito"){
