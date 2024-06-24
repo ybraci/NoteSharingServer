@@ -33,7 +33,7 @@ fun Route.notesRoute(database: Database) {
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
         println("**************** id snnuncio ricevuto: $idAnnuncio")
         try{
-            var pdf = ComandiDatoDigitale(database).getPDF("e9d5ed1c-2288-4c90-a5eb-4eb7ccdaead3")
+            var pdf = ComandiDatoDigitale(database).getPDF(idAnnuncio)
             call.respond(HttpStatusCode.OK, pdf)
         }catch (e:NoSuchElementException) {
             e.printStackTrace()
