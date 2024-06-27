@@ -39,14 +39,15 @@ class ComandiAnnuncio(dbms: Database){
         }
     }
 
-    fun getListaAnnunci(): ArrayList<Annuncio> {
-        val query = ("SELECT * "
-                + "FROM Annuncio ;")
+    fun getListaAnnunci(username: String): ArrayList<Annuncio> {
+        //Questa query seleziona tutti gli annunci tranne quelli che ha pubblicato l'utente loggato
+        val query = ("SELECT * FROM Annuncio WHERE id NOT IN (SELECT id FROM Annuncio WHERE idProprietarioPersona = ?) ;")
         val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        preparedStatement?.apply {
+            setString(1, username)
+        }
         val result = preparedStatement.executeQuery()
-
         val listaA: ArrayList<Annuncio> = ArrayList()
-
         while (result.next()) {
             listaA.add(Annuncio(result.getString("id"),
                 result.getString("titolo"),
@@ -63,10 +64,8 @@ class ComandiAnnuncio(dbms: Database){
         return listaA
     }
 
-
     fun getAnnunciPreferiti(username: String): ArrayList<Annuncio> {
         val listaA: ArrayList<Annuncio> = ArrayList()
-
         val query = ("SELECT * "
                 + "FROM Annuncio "
                 + "WHERE idProprietarioPersona = ? AND preferito = true ;")
@@ -75,7 +74,6 @@ class ComandiAnnuncio(dbms: Database){
             setString(1, username)
         }
         val result = preparedStatement.executeQuery()
-
         while (result.next()) {
             listaA.add(Annuncio(result.getString("id"),
                 result.getString("titolo"),
@@ -87,10 +85,8 @@ class ComandiAnnuncio(dbms: Database){
                 result.getBoolean("preferito")
             ))
         }
-
         result.close()
         preparedStatement.close()
-
         return listaA
     }
 
@@ -98,28 +94,23 @@ class ComandiAnnuncio(dbms: Database){
     fun updatePreferito(idAnnuncio: String, preferito: Boolean) {
         var connection: Connection? = null
         var preparedStatement: PreparedStatement? = null
-
         try {
             connection = database.getConnection()
             if (connection == null || connection.isClosed) {
                 throw SQLException("Failed to obtain a valid connection.")
             }
-
             connection.autoCommit = false
             val query = "UPDATE annuncio SET preferito = ? WHERE id = ?"
             println("Executing query: $query with preferito=$preferito and id=$idAnnuncio")
-
             preparedStatement = connection.prepareStatement(query)
             preparedStatement.setBoolean(1, preferito)
             preparedStatement.setString(2, idAnnuncio)
-
             val rowsUpdated = preparedStatement.executeUpdate() //*********************
             if (rowsUpdated > 0) {
                 println("Successfully updated $rowsUpdated row(s).")
             } else {
                 println("No rows were updated. Check if idAnnuncio=$idAnnuncio exists.")
             }
-
             connection.commit()
         } catch (e: SQLException) {
             connection?.rollback()
@@ -155,7 +146,6 @@ class ComandiAnnuncio(dbms: Database){
             println("PreparedStatement closed")
         }
     }
-
 
     fun getUsernameAnnunci(username: String): ArrayList<Annuncio> {
         val query = ("SELECT * FROM Annuncio WHERE idProprietarioPersona = ?;")

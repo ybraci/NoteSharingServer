@@ -79,9 +79,11 @@ fun Route.notesRoute(database: Database) {
     }
 
     get("/listaAnnunci"){
-        val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getListaAnnunci()
+        val username = call.request.queryParameters["username"].toString()
+        val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getListaAnnunci(username)
         call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
     }
+
     get("/myAnnunci"){
         val username = call.request.queryParameters["username"].toString()
         val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getUsernameAnnunci(username)
