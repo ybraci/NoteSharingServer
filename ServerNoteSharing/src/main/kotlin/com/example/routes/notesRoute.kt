@@ -159,7 +159,7 @@ fun Route.notesRoute(database: Database) {
 
     get("/materialeFisicoAssociatoAnnuncio"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
-        if (idAnnuncio.isBlank()) {
+        if (idAnnuncio.isNotBlank()) {
             try {
                 val materiale = ComandiMaterialeFisico(database).getMF(idAnnuncio)
                 call.respond(HttpStatusCode.OK, materiale)
@@ -171,7 +171,7 @@ fun Route.notesRoute(database: Database) {
 
     get("/materialeDigitaleAssociatoAnnuncio"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
-        if (idAnnuncio.isBlank()) {
+        if (idAnnuncio.isNotBlank()) {
             try {
                 val materiale = ComandiMaterialeDigitale(database).getMD(idAnnuncio)
                 call.respond(HttpStatusCode.OK, materiale)
