@@ -62,6 +62,8 @@ class ComandiAnnuncio(dbms: Database){
         result.close()
         preparedStatement.close()
         return listaA
+        //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
+        //perchè in questo caso viene gestito già dal client
     }
 
     fun getAnnunciPreferiti(username: String): ArrayList<Annuncio> {
@@ -88,6 +90,8 @@ class ComandiAnnuncio(dbms: Database){
         result.close()
         preparedStatement.close()
         return listaA
+        //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
+        //perchè in questo caso viene gestito già dal client
     }
 
     //Solo questa versione non comporta la chiusura della connesione dal parte del db
@@ -114,7 +118,6 @@ class ComandiAnnuncio(dbms: Database){
             connection.commit()
         } catch (e: SQLException) {
             connection?.rollback()
-            e.printStackTrace()
             throw e
         } finally {
             preparedStatement?.close()
@@ -138,8 +141,6 @@ class ComandiAnnuncio(dbms: Database){
             val rowsAffected = preparedStatement.executeUpdate()
             println("Execute update completed. Rows affected: $rowsAffected")
         } catch (e: SQLException) {
-            println("SQLException caught: ${e.message}")
-            e.printStackTrace()
             throw e
         } finally {
             preparedStatement?.close()
@@ -147,6 +148,7 @@ class ComandiAnnuncio(dbms: Database){
         }
     }
 
+    //restituisce tutti gli annunci pubblicati dall'utente
     fun getUsernameAnnunci(username: String): ArrayList<Annuncio> {
         val query = ("SELECT * FROM Annuncio WHERE idProprietarioPersona = ?;")
         val listaA: ArrayList<Annuncio> = ArrayList()
@@ -169,6 +171,8 @@ class ComandiAnnuncio(dbms: Database){
         result.close()
         preparedStatement.close()
         return listaA
+        //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
+        //perchè in questo caso viene gestito già dal client
     }
 
     //Se restituisce true l'annuncio è fisico

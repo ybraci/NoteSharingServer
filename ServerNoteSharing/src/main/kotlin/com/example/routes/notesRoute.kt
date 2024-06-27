@@ -15,67 +15,95 @@ import io.ktor.server.routing.*
 import java.io.File
 
 fun Route.notesRoute(database: Database) {
+
     post("/uploadPdf") {
         val datoDigitale = call.receive<DatoDigitale>()
-        println("****************************************************************** Dato digitale reciever: $datoDigitale")
-        //Save nel db
+        //Salvataggio nel db
         if (datoDigitale.idDato.isNotBlank()){ // se faccio datoDigitale|=null mi dice che sarà sempre true
-            ComandiDatoDigitale(database).insertPDFtoDatoDigitale(datoDigitale)
-            ComandiDatoDigitale(database).insertPDFtoHA(datoDigitale)
-            call.respond(HttpStatusCode.OK, "File uploaded successfully")
+            try{
+                ComandiDatoDigitale(database).insertPDFtoDatoDigitale(datoDigitale)
+                ComandiDatoDigitale(database).insertPDFtoHA(datoDigitale)
+            }catch(e: Exception){
+                call.respond(HttpStatusCode.InternalServerError)
+                e.printStackTrace()
+            }
+            call.respond(HttpStatusCode.OK, mapOf("message" to "File uploaded successfully"))
         }else{
-            //Gestire il caso
-            call.respond(HttpStatusCode.NoContent, "File uploaded Unsuccessfully because the fileBytes or the name are missing")
+            call.respond(HttpStatusCode.NoContent, mapOf("message" to "File uploaded Unsuccessfully because the fileBytes or the name are missing"))
         }
-
     }
+
     get("/getPDFs"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
-        println("**************** id snnuncio ricevuto: $idAnnuncio")
         try{
-            var pdf = ComandiDatoDigitale(database).getPDF(idAnnuncio)
+            val pdf = ComandiDatoDigitale(database).getPDF(idAnnuncio)
             call.respond(HttpStatusCode.OK, pdf)
         }catch (e:NoSuchElementException) {
+            call.respond(HttpStatusCode.InternalServerError)
             e.printStackTrace()
         }
-
     }
 
-    //prima di fare upload annuncio, bisogna inserire l'utente e che l'id della persona in ComandiAnnuncio.InsertAdv sia uguale alla mail di ComandiPersona.InsertUser
     post("/uploadAnnuncio"){
         val annuncio = call.receive<Annuncio>()
-        call.respond(HttpStatusCode.OK, "Annuncio received successfully")
-        ComandiAnnuncio(database).insertAdv(annuncio)
+        try {
+            ComandiAnnuncio(database).insertAdv(annuncio)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError)
+            e.printStackTrace()
+        }
+        call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
     }
 
     post("/uploadMD"){
         val mDigitale = call.receive<MaterialeDigitale>()
-        call.respond(HttpStatusCode.OK, "Annuncio received successfully")
-        ComandiMaterialeDigitale(database).insertMD(mDigitale)
+        try {
+            ComandiMaterialeDigitale(database).insertMD(mDigitale)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError)
+            e.printStackTrace()
+        }
+        call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
     }
 
     post("/uploadMF"){
         val mFisico = call.receive<MaterialeFisico>()
-        call.respond(HttpStatusCode.OK, "Annuncio received successfully")
-        ComandiMaterialeFisico(database).insertMF(mFisico)
+        try {
+            ComandiMaterialeFisico(database).insertMF(mFisico)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError)
+            e.printStackTrace()
+        }
+        call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
     }
 
     post("/salvaAnnuncioComePreferito"){
         val idA = call.receive<String>().trim('"')
-        //println("++++++++++++++++++++++++++++++++++++++++++++++++++++++ $idA")
-        println("Hex representation: " + idA.toByteArray().joinToString("") { "%02x".format(it) })
         //aggiorno l'attributo preferito a true
-        ComandiAnnuncio(database).updatePreferito(idA, true)
+        try {
+            ComandiAnnuncio(database).updatePreferito(idA, true)
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError)
+            e.printStackTrace()
+        }
     }
+
     post("/eliminaAnnuncioComePreferito"){
         val idA = call.receive<String>().trim('"')
         //aggiorno l'attributo preferito a true
-        ComandiAnnuncio(database).updatePreferito(idA, false)
+        try {
+            ComandiAnnuncio(database).updatePreferito(idA, false)
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio deleted successfully"))
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError)
+            e.printStackTrace()
+        }
     }
+
     post("/eliminaAnnuncio"){
         try {
             val idA = call.receive<String>().trim('"')
-            println("******************** $idA")
             if(!ComandiAnnuncio(database).isFisico(idA)){
                 //trovo i pdf associato (usando HA e ..)
                 val listaPdfs = ComandiDatoDigitale(database).trovaPdfs(idA)
@@ -88,63 +116,69 @@ fun Route.notesRoute(database: Database) {
             ComandiAnnuncio(database).eliminaAnnuncio(idA)
             call.respond(HttpStatusCode.OK, mapOf("message" to "Deleted successfully"))
         } catch (e: Exception) {
-            println(e.printStackTrace())
+            e.printStackTrace()
             call.respond(HttpStatusCode.InternalServerError, mapOf("message" to "InternalServerError"))
         }
     }
 
     get("/listaAnnunci"){
         val username = call.request.queryParameters["username"].toString()
-        val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getListaAnnunci(username)
-        call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
+        try {
+            val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getListaAnnunci(username)
+            call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
+        //perchè in questo caso viene gestito già dal client
     }
 
     get("/myAnnunci"){
         val username = call.request.queryParameters["username"].toString()
-        val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getUsernameAnnunci(username)
-        call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
+        try {
+            val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getUsernameAnnunci(username)
+            call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
+        //perchè in questo caso viene gestito già dal client
     }
 
     get("/listaAnnunciSalvati"){
+        val username = call.request.queryParameters["username"].toString()
         try {
-            val username = call.request.queryParameters["username"].toString()
             val annunci: ArrayList<Annuncio> = ComandiAnnuncio(database).getAnnunciPreferiti(username)
             call.respond(HttpStatusCode.OK, annunci)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.InternalServerError, "Failed to retrieve saved announcements: ${e.message}")
-            // Log the exception for further investigation
-            application.log.error("Failed to retrieve saved announcements", e)
+            e.printStackTrace()
         }
+        //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
+        //perchè in questo caso viene gestito già dal client
     }
 
     get("/materialeFisicoAssociatoAnnuncio"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
-
-        if (idAnnuncio != null) {
+        if (idAnnuncio.isBlank()) {
             try {
                 val materiale = ComandiMaterialeFisico(database).getMF(idAnnuncio)
                 call.respond(HttpStatusCode.OK, materiale)
-            } catch (e: NoSuchElementException) {
-                call.respond(HttpStatusCode.NotFound, e.message ?: "Materiale Fisico non esistente con id $idAnnuncio")
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, "An error occurred: ${e.message}")
+                e.printStackTrace()
             }
-        } else {
-            call.respond(HttpStatusCode.BadRequest, "Missing or invalid idAnnuncio parameter")
         }
     }
 
     get("/materialeDigitaleAssociatoAnnuncio"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
-        try {
-            val materiale = ComandiMaterialeDigitale(database).getMD(idAnnuncio)
-            call.respond(HttpStatusCode.OK, materiale)
-        } catch (e: NoSuchElementException) {
-            call.respond(HttpStatusCode.NotFound, e.message ?: "Materiale Digitale non esistente con id $idAnnuncio")
-        } catch (e: Exception) {
-            call.respond(HttpStatusCode.InternalServerError, "An error occurred: ${e.message}")
+        if (idAnnuncio.isBlank()) {
+            try {
+                val materiale = ComandiMaterialeDigitale(database).getMD(idAnnuncio)
+                call.respond(HttpStatusCode.OK, materiale)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
-
     }
 
 }

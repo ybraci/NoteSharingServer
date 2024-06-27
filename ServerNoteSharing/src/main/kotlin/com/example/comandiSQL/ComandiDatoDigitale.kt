@@ -54,12 +54,13 @@ class ComandiDatoDigitale(dbms: Database){
         } catch (e: SQLException) {
             // Rollback the transaction in case of any exception
             database.getConnection()?.rollback()
-            e.printStackTrace()
+            throw e
         } finally {
             // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
     }
+
     fun getPDF(idAnnuncio: String): ArrayList<DatoDigitale>{
         val query = ("SELECT IDdatoDigitale, idAnnuncio, dato, nome "
                 + "FROM ha, DatoDigitale "
@@ -126,8 +127,6 @@ class ComandiDatoDigitale(dbms: Database){
             preparedStatement.setString(1, idPdf)
             val rowsAffected = preparedStatement.executeUpdate()
         } catch (e: SQLException) {
-            println("SQLException caught: ${e.message}")
-            e.printStackTrace()
             throw e
         } finally {
             preparedStatement?.close()
