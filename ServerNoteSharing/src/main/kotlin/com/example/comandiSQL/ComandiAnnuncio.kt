@@ -171,4 +171,26 @@ class ComandiAnnuncio(dbms: Database){
         return listaA
     }
 
+    //Se restituisce true l'annuncio è fisico
+    fun isFisico(idA: String): Boolean {
+        val query = ("SELECT tipomateriale FROM annuncio WHERE id = ? ;")
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        preparedStatement?.apply {
+            setString(1, idA)
+        }
+        val result = preparedStatement.executeQuery()
+        var resBool: Boolean? = null
+        while (result.next()) {
+            resBool = result.getBoolean("tipomateriale")
+        }
+        result.close()
+        preparedStatement.close()
+        if(resBool != null){
+            return resBool
+        }else{
+            throw NoSuchElementException("File non esistente")
+        }
+
+    }
+
 }

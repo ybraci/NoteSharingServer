@@ -3,11 +3,13 @@ package com.example.comandiSQL
 import com.example.data.Annuncio
 import com.example.data.DatoDigitale
 import com.example.database.Database
+import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.SQLException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.NoSuchElementException
+import kotlin.collections.ArrayList
 
 class ComandiDatoDigitale(dbms: Database){
     private var database: Database = dbms
@@ -83,6 +85,53 @@ class ComandiDatoDigitale(dbms: Database){
             return lista
         }else{
             throw NoSuchElementException("File non esistente")
+        }
+    }
+
+    //Restiruisce gli id dei pdf (DatoDigitale) corrispondenti ad un Annuncio
+    fun trovaPdfs(idAnnuncio: String): ArrayList<String>{
+        println("**********id : $idAnnuncio")
+        val query = ("SELECT IDdatoDigitale "
+                    + "FROM ha "
+                    + "WHERE idAnnuncio = ? ;")
+        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        preparedStatement.apply {
+            setString(1, idAnnuncio)
+        }
+        val result = preparedStatement.executeQuery()
+
+        var lista: ArrayList<String> = ArrayList()
+        while (result.next()) {
+            lista.add(result.getString("IDdatoDigitale"))
+        }
+        result.close()
+        preparedStatement.close()
+        if(lista.isNotEmpty()){
+            return lista
+        }else{
+            throw NoSuchElementException("File non esistente")
+        }
+    }
+
+    fun eliminaPdf(idPdf: String) {
+        val query = "DELETE FROM DatoDigitale WHERE id = ?;"
+        var connection: Connection? = null
+        var preparedStatement: PreparedStatement? = null
+        try {
+            connection = database.getConnection()
+            if (connection == null || connection.isClosed) {
+                throw SQLException("Failed to obtain a valid connection.")
+            }
+            preparedStatement = connection.prepareStatement(query)
+            preparedStatement.setString(1, idPdf)
+            val rowsAffected = preparedStatement.executeUpdate()
+        } catch (e: SQLException) {
+            println("SQLException caught: ${e.message}")
+            e.printStackTrace()
+            throw e
+        } finally {
+            preparedStatement?.close()
+            println("PreparedStatement closed")
         }
     }
 

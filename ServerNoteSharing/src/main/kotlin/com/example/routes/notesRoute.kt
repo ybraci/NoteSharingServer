@@ -41,7 +41,6 @@ fun Route.notesRoute(database: Database) {
 
     }
 
-
     //prima di fare upload annuncio, bisogna inserire l'utente e che l'id della persona in ComandiAnnuncio.InsertAdv sia uguale alla mail di ComandiPersona.InsertUser
     post("/uploadAnnuncio"){
         val annuncio = call.receive<Annuncio>()
@@ -74,8 +73,24 @@ fun Route.notesRoute(database: Database) {
         ComandiAnnuncio(database).updatePreferito(idA, false)
     }
     post("/eliminaAnnuncio"){
-        val idA = call.receive<String>().trim('"')
-        ComandiAnnuncio(database).eliminaAnnuncio(idA)
+        try {
+            val idA = call.receive<String>().trim('"')
+            println("******************** $idA")
+            if(!ComandiAnnuncio(database).isFisico(idA)){
+                //trovo i pdf associato (usando HA e ..)
+                val listaPdfs = ComandiDatoDigitale(database).trovaPdfs(idA)
+                //elimino i pdf
+                for (pdf in listaPdfs){
+                    ComandiDatoDigitale(database).eliminaPdf(pdf)
+                }
+            }
+            //elimino annuncio
+            ComandiAnnuncio(database).eliminaAnnuncio(idA)
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Deleted successfully"))
+        } catch (e: Exception) {
+            println(e.printStackTrace())
+            call.respond(HttpStatusCode.InternalServerError, mapOf("message" to "InternalServerError"))
+        }
     }
 
     get("/listaAnnunci"){
