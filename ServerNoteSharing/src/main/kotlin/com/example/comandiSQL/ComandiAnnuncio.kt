@@ -41,55 +41,63 @@ class ComandiAnnuncio(dbms: Database){
 
     fun getListaAnnunci(username: String): ArrayList<Annuncio> {
         //Questa query seleziona tutti gli annunci tranne quelli che ha pubblicato l'utente loggato
-        val query = ("SELECT * FROM Annuncio WHERE id NOT IN (SELECT id FROM Annuncio WHERE idProprietarioPersona = ?) ;")
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
-        preparedStatement?.apply {
-            setString(1, username)
+        try {
+            val query = ("SELECT * FROM Annuncio WHERE id NOT IN (SELECT id FROM Annuncio WHERE idProprietarioPersona = ?) ;")
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement?.apply {
+                setString(1, username)
+            }
+            val result = preparedStatement.executeQuery()
+            val listaA: ArrayList<Annuncio> = ArrayList()
+            while (result.next()) {
+                listaA.add(Annuncio(result.getString("id"),
+                    result.getString("titolo"),
+                    result.getDate("data").toString(),
+                    result.getString("descrizioneAnnuncio"),
+                    result.getBoolean("tipoMateriale"),
+                    result.getString("idProprietarioPersona"),
+                    result.getInt("areaAnnuncio"),
+                    result.getBoolean("preferito")
+                    ))
+            }
+            result.close()
+            preparedStatement.close()
+            return listaA
+        } catch (e: SQLException) {
+            throw e
         }
-        val result = preparedStatement.executeQuery()
-        val listaA: ArrayList<Annuncio> = ArrayList()
-        while (result.next()) {
-            listaA.add(Annuncio(result.getString("id"),
-                result.getString("titolo"),
-                result.getDate("data").toString(),
-                result.getString("descrizioneAnnuncio"),
-                result.getBoolean("tipoMateriale"),
-                result.getString("idProprietarioPersona"),
-                result.getInt("areaAnnuncio"),
-                result.getBoolean("preferito")
-                ))
-        }
-        result.close()
-        preparedStatement.close()
-        return listaA
         //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
         //perchè in questo caso viene gestito già dal client
     }
 
     fun getAnnunciPreferiti(username: String): ArrayList<Annuncio> {
-        val listaA: ArrayList<Annuncio> = ArrayList()
-        val query = ("SELECT * "
-                + "FROM Annuncio "
-                + "WHERE idProprietarioPersona = ? AND preferito = true ;")
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
-        preparedStatement?.apply {
-            setString(1, username)
+        try {
+            val listaA: ArrayList<Annuncio> = ArrayList()
+            val query = ("SELECT * "
+                    + "FROM Annuncio "
+                    + "WHERE idProprietarioPersona = ? AND preferito = true ;")
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement?.apply {
+                setString(1, username)
+            }
+            val result = preparedStatement.executeQuery()
+            while (result.next()) {
+                listaA.add(Annuncio(result.getString("id"),
+                    result.getString("titolo"),
+                    result.getDate("data").toString(),
+                    result.getString("descrizioneAnnuncio"),
+                    result.getBoolean("tipoMateriale"),
+                    result.getString("idProprietarioPersona"),
+                    result.getInt("areaAnnuncio"),
+                    result.getBoolean("preferito")
+                ))
+            }
+            result.close()
+            preparedStatement.close()
+            return listaA
+        } catch (e: SQLException) {
+            throw e
         }
-        val result = preparedStatement.executeQuery()
-        while (result.next()) {
-            listaA.add(Annuncio(result.getString("id"),
-                result.getString("titolo"),
-                result.getDate("data").toString(),
-                result.getString("descrizioneAnnuncio"),
-                result.getBoolean("tipoMateriale"),
-                result.getString("idProprietarioPersona"),
-                result.getInt("areaAnnuncio"),
-                result.getBoolean("preferito")
-            ))
-        }
-        result.close()
-        preparedStatement.close()
-        return listaA
         //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
         //perchè in questo caso viene gestito già dal client
     }
@@ -150,49 +158,57 @@ class ComandiAnnuncio(dbms: Database){
 
     //restituisce tutti gli annunci pubblicati dall'utente
     fun getUsernameAnnunci(username: String): ArrayList<Annuncio> {
-        val query = ("SELECT * FROM Annuncio WHERE idProprietarioPersona = ?;")
-        val listaA: ArrayList<Annuncio> = ArrayList()
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
-        preparedStatement?.apply {
-            setString(1, username)
+        try {
+            val query = ("SELECT * FROM Annuncio WHERE idProprietarioPersona = ?;")
+            val listaA: ArrayList<Annuncio> = ArrayList()
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement?.apply {
+                setString(1, username)
+            }
+            val result = preparedStatement.executeQuery()
+            while (result.next()) {
+                listaA.add(Annuncio(result.getString("id"),
+                    result.getString("titolo"),
+                    result.getDate("data").toString(),
+                    result.getString("descrizioneAnnuncio"),
+                    result.getBoolean("tipoMateriale"),
+                    result.getString("idProprietarioPersona"),
+                    result.getInt("areaAnnuncio"),
+                    result.getBoolean("preferito")
+                ))
+            }
+            result.close()
+            preparedStatement.close()
+            return listaA
+        } catch (e: SQLException) {
+            throw e
         }
-        val result = preparedStatement.executeQuery()
-        while (result.next()) {
-            listaA.add(Annuncio(result.getString("id"),
-                result.getString("titolo"),
-                result.getDate("data").toString(),
-                result.getString("descrizioneAnnuncio"),
-                result.getBoolean("tipoMateriale"),
-                result.getString("idProprietarioPersona"),
-                result.getInt("areaAnnuncio"),
-                result.getBoolean("preferito")
-            ))
-        }
-        result.close()
-        preparedStatement.close()
-        return listaA
         //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
         //perchè in questo caso viene gestito già dal client
     }
 
     //Se restituisce true l'annuncio è fisico
     fun isFisico(idA: String): Boolean {
-        val query = ("SELECT tipomateriale FROM annuncio WHERE id = ? ;")
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
-        preparedStatement?.apply {
-            setString(1, idA)
-        }
-        val result = preparedStatement.executeQuery()
-        var resBool: Boolean? = null
-        while (result.next()) {
-            resBool = result.getBoolean("tipomateriale")
-        }
-        result.close()
-        preparedStatement.close()
-        if(resBool != null){
-            return resBool
-        }else{
-            throw NoSuchElementException("File non esistente")
+        try {
+            val query = ("SELECT tipomateriale FROM annuncio WHERE id = ? ;")
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement?.apply {
+                setString(1, idA)
+            }
+            val result = preparedStatement.executeQuery()
+            var resBool: Boolean? = null
+            while (result.next()) {
+                resBool = result.getBoolean("tipomateriale")
+            }
+            result.close()
+            preparedStatement.close()
+            if(resBool != null){
+                return resBool
+            }else{
+                throw NoSuchElementException("File non esistente")
+            }
+        } catch (e: SQLException) {
+            throw e
         }
 
     }

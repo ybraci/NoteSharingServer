@@ -62,55 +62,62 @@ class ComandiDatoDigitale(dbms: Database){
     }
 
     fun getPDF(idAnnuncio: String): ArrayList<DatoDigitale>{
-        val query = ("SELECT IDdatoDigitale, idAnnuncio, dato, nome "
-                + "FROM ha, DatoDigitale "
-                + "WHERE id = IDdatoDigitale AND idAnnuncio = ? ;")
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
-        preparedStatement.apply {
-            setString(1, idAnnuncio)
-        }
-        val result = preparedStatement.executeQuery()
+        try {
+            val query = ("SELECT IDdatoDigitale, idAnnuncio, dato, nome "
+                    + "FROM ha, DatoDigitale "
+                    + "WHERE id = IDdatoDigitale AND idAnnuncio = ? ;")
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement.apply {
+                setString(1, idAnnuncio)
+            }
+            val result = preparedStatement.executeQuery()
 
-        var lista: ArrayList<DatoDigitale> = ArrayList<DatoDigitale>()
-        while (result.next()) {
-                lista.add(DatoDigitale(
-                    result.getString("IDdatoDigitale"),
-                    result.getString("idAnnuncio"),
-                    result.getBytes("dato"),
-                    result.getString("nome")
-                ))
-        }
-        result.close()
-        preparedStatement.close()
-        if(lista.isNotEmpty()){
-            return lista
-        }else{
-            throw NoSuchElementException("File non esistente")
+            var lista: ArrayList<DatoDigitale> = ArrayList<DatoDigitale>()
+            while (result.next()) {
+                    lista.add(DatoDigitale(
+                        result.getString("IDdatoDigitale"),
+                        result.getString("idAnnuncio"),
+                        result.getBytes("dato"),
+                        result.getString("nome")
+                    ))
+            }
+            result.close()
+            preparedStatement.close()
+            if(lista.isNotEmpty()){
+                return lista
+            }else{
+                throw NoSuchElementException("File non esistente")
+            }
+        } catch (e: SQLException) {
+            throw e
         }
     }
 
     //Restiruisce gli id dei pdf (DatoDigitale) corrispondenti ad un Annuncio
     fun trovaPdfs(idAnnuncio: String): ArrayList<String>{
-        println("**********id : $idAnnuncio")
-        val query = ("SELECT IDdatoDigitale "
-                    + "FROM ha "
-                    + "WHERE idAnnuncio = ? ;")
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
-        preparedStatement.apply {
-            setString(1, idAnnuncio)
-        }
-        val result = preparedStatement.executeQuery()
+        try {
+            val query = ("SELECT IDdatoDigitale "
+                        + "FROM ha "
+                        + "WHERE idAnnuncio = ? ;")
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement.apply {
+                setString(1, idAnnuncio)
+            }
+            val result = preparedStatement.executeQuery()
 
-        var lista: ArrayList<String> = ArrayList()
-        while (result.next()) {
-            lista.add(result.getString("IDdatoDigitale"))
-        }
-        result.close()
-        preparedStatement.close()
-        if(lista.isNotEmpty()){
-            return lista
-        }else{
-            throw NoSuchElementException("File non esistente")
+            var lista: ArrayList<String> = ArrayList()
+            while (result.next()) {
+                lista.add(result.getString("IDdatoDigitale"))
+            }
+            result.close()
+            preparedStatement.close()
+            if(lista.isNotEmpty()){
+                return lista
+            }else{
+                throw NoSuchElementException("File non esistente")
+            }
+        } catch (e: SQLException) {
+            throw e
         }
     }
 

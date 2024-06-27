@@ -39,34 +39,38 @@ class ComandiMaterialeFisico(dbms: Database) {
     }
 
     fun getMF(idAnnuncio: String): MaterialeFisico {
-        val query = ("SELECT * "
-                + "FROM MaterialeFisico "
-                + "WHERE id = ? ;")
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
-        preparedStatement.setString(1, idAnnuncio)
-        val result = preparedStatement.executeQuery()
+        try {
+            val query = ("SELECT * "
+                    + "FROM MaterialeFisico "
+                    + "WHERE id = ? ;")
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement.setString(1, idAnnuncio)
+            val result = preparedStatement.executeQuery()
 
-        var materialeF: MaterialeFisico? = null
-        while (result.next()) {
-            materialeF = MaterialeFisico(
-                result.getString("id"),
-                result.getInt("costo"),
-                result.getInt("annoRif"),
-                result.getString("descrizioneMateriale"),
-                result.getString("provincia"),
-                result.getString("comune"),
-                result.getString("via"),
-                result.getInt("nrCivico"),
-                result.getInt("cap")
-                )
-        }
-        result.close()
-        preparedStatement.close()
+            var materialeF: MaterialeFisico? = null
+            while (result.next()) {
+                materialeF = MaterialeFisico(
+                    result.getString("id"),
+                    result.getInt("costo"),
+                    result.getInt("annoRif"),
+                    result.getString("descrizioneMateriale"),
+                    result.getString("provincia"),
+                    result.getString("comune"),
+                    result.getString("via"),
+                    result.getInt("nrCivico"),
+                    result.getInt("cap")
+                    )
+            }
+            result.close()
+            preparedStatement.close()
 
-        if(materialeF!=null){
-            return materialeF
-        }else{
-            throw NoSuchElementException("Materiale Fisico non esistente con id $idAnnuncio")
+            if(materialeF!=null){
+                return materialeF
+            }else{
+                throw NoSuchElementException("Materiale Fisico non esistente con id $idAnnuncio")
+            }
+        } catch (e: SQLException) {
+            throw e
         }
 
     }

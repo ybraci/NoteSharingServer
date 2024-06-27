@@ -35,28 +35,32 @@ class ComandiMaterialeDigitale(dbms: Database){
     }
 
     fun getMD(idAnnuncio: String): MaterialeDigitale {
-        val query = ("SELECT * "
-                + "FROM MaterialeDigitale "
-                + "WHERE id = ? ;")
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
-        preparedStatement.setString(1, idAnnuncio)
-        val result = preparedStatement.executeQuery()
+        try {
+            val query = ("SELECT * "
+                    + "FROM MaterialeDigitale "
+                    + "WHERE id = ? ;")
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement.setString(1, idAnnuncio)
+            val result = preparedStatement.executeQuery()
 
-        var materialeD: MaterialeDigitale? = null
-        while (result.next()) {
-            materialeD = MaterialeDigitale(
-                result.getString("id"),
-                result.getInt("annoRif"),
-                result.getString("descrizioneMateriale")
-            )
-        }
-        result.close()
-        preparedStatement.close()
+            var materialeD: MaterialeDigitale? = null
+            while (result.next()) {
+                materialeD = MaterialeDigitale(
+                    result.getString("id"),
+                    result.getInt("annoRif"),
+                    result.getString("descrizioneMateriale")
+                )
+            }
+            result.close()
+            preparedStatement.close()
 
-        if(materialeD!=null){
-            return materialeD
-        }else{
-            throw NoSuchElementException("Materiale Digitale non esistente con id $idAnnuncio")
+            if(materialeD!=null){
+                return materialeD
+            }else{
+                throw NoSuchElementException("Materiale Digitale non esistente con id $idAnnuncio")
+            }
+        } catch (e: SQLException) {
+            throw e
         }
 
     }

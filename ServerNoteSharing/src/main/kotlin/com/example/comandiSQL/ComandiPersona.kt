@@ -21,24 +21,7 @@ import java.util.*
 class ComandiPersona(dbms: Database) {
     private var database: Database = dbms
 
-    /**
-     * Metodo che inserisce un nuovo utente nella tabella *UtentiRegistrati*. ('E una transazione).
-     *
-     * @param username Username del nuovo utente.
-     * @param email E-mail del nuovo utente.
-     * @param password Password del nuovo utente.
-     * @param cf Codice Fiscale del nuovo utente.
-     * @param nome Nome del nuovo utente.
-     * @param cognome Cognome del nuovo utente.
-     * @param provincia Provincia di residenza del nuovo utente.
-     * @param comune Comune di residenza del nuovo utente.
-     * @param via Via di residenza del nuovo utente.
-     * @param nrCivico Numero civico di residenza del nuovo utente.
-     * @param cap CAP di residenza del nuovo utente.
-     * @param dataN Data di nascita del nuovo utente.
-     * @throws SQLException Se si verificano errori durante l'interazione con il database.
-     */
-    @Throws(SQLException::class)
+    @Throws(SQLException::class) //******????????????????????????????????????????????
     fun signUp(
         persona:Persona
     ) {
@@ -125,29 +108,33 @@ class ComandiPersona(dbms: Database) {
     }
 
     fun loginUser(username: String, password: String): Boolean {
-        if(username.isBlank() || password.isBlank()){
-            return false
-        }
-        val query = "SELECT username, password FROM Persona WHERE username = ? AND password = ?"
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
+        try {
+            if(username.isBlank() || password.isBlank()){
+                return false
+            }
+            val query = "SELECT username, password FROM Persona WHERE username = ? AND password = ?"
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
 
-        preparedStatement?.apply {
-            setString(1, username)
-            setString(2, password)
-        }
-        val result = preparedStatement.executeQuery()
-        var usernameResult = ""
-        var passwordResult = ""
-        while(result.next()) {
-            usernameResult = result.getString("username")
-            passwordResult = result.getString("password")
-        }
-        result?.close()
-        preparedStatement?.close()
-        if(username==usernameResult && password==passwordResult){
-            return true
-        } else {
-            return false
+            preparedStatement?.apply {
+                setString(1, username)
+                setString(2, password)
+            }
+            val result = preparedStatement.executeQuery()
+            var usernameResult = ""
+            var passwordResult = ""
+            while(result.next()) {
+                usernameResult = result.getString("username")
+                passwordResult = result.getString("password")
+            }
+            result?.close()
+            preparedStatement?.close()
+            if(username==usernameResult && password==passwordResult){
+                return true
+            } else {
+                return false
+            }
+        } catch (e: SQLException) {
+            throw e
         }
     }
     //In sostanza, questa funzione verifica se esiste un utente con l’username o l’email e la password forniti.
@@ -156,22 +143,26 @@ class ComandiPersona(dbms: Database) {
 
     @Throws(SQLException::class)
     fun isUsernameTaken(username: String?): Boolean {
-        val query = "SELECT username FROM Persona WHERE username = ?"
-        val preparedStatement = database.getConnection()!!.prepareStatement(query)
-        preparedStatement.apply {
-            setString(1, username)
-        }
-        val result = preparedStatement.executeQuery()
-        var usernameResult = ""
-        while(result.next()) {
-            usernameResult = result.getString("username")
-        }
-        result?.close()
-        preparedStatement?.close()
-        if(username == usernameResult){
-            return true
-        } else {
-            return false
+        try {
+            val query = "SELECT username FROM Persona WHERE username = ?"
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+            preparedStatement.apply {
+                setString(1, username)
+            }
+            val result = preparedStatement.executeQuery()
+            var usernameResult = ""
+            while(result.next()) {
+                usernameResult = result.getString("username")
+            }
+            result?.close()
+            preparedStatement?.close()
+            if(username == usernameResult){
+                return true
+            } else {
+                return false
+            }
+        } catch (e: SQLException) {
+            throw e
         }
     }
 
