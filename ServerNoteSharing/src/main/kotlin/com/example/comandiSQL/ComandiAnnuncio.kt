@@ -13,16 +13,15 @@ class ComandiAnnuncio(dbms: Database){
         try {
             database.getConnection()?.apply {
                 autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Annuncio VALUES (?,?,?,?,?,?,?,?)")
+                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Annuncio VALUES (?,?,?,?,?,?,?)")
                 prepared?.apply {
                     setString(1, annuncio.id)
                     setString(2, annuncio.titolo)
                     setDate(3, java.sql.Date(SimpleDateFormat("yyyy-MM-dd").parse(annuncio.data).time)) //"2024-05-13"
-                    setString(4, annuncio.descrizioneAnnuncio)
-                    setString(5, annuncio.idProprietario)
-                    setBoolean(6, annuncio.tipoMateriale)
-                    setInt(7, annuncio.areaAnnuncio)
-                    setBoolean(8, annuncio.preferito)
+                    setString(4, annuncio.idProprietario)
+                    setBoolean(5, annuncio.tipoMateriale)
+                    setInt(6, annuncio.areaAnnuncio)
+                    setBoolean(7, annuncio.preferito)
 
                     executeUpdate()
                     close() // Close the PreparedStatement
@@ -53,7 +52,6 @@ class ComandiAnnuncio(dbms: Database){
                 listaA.add(Annuncio(result.getString("id"),
                     result.getString("titolo"),
                     result.getDate("data").toString(),
-                    result.getString("descrizioneAnnuncio"),
                     result.getBoolean("tipoMateriale"),
                     result.getString("idProprietarioPersona"),
                     result.getInt("areaAnnuncio"),
@@ -85,7 +83,6 @@ class ComandiAnnuncio(dbms: Database){
                 listaA.add(Annuncio(result.getString("id"),
                     result.getString("titolo"),
                     result.getDate("data").toString(),
-                    result.getString("descrizioneAnnuncio"),
                     result.getBoolean("tipoMateriale"),
                     result.getString("idProprietarioPersona"),
                     result.getInt("areaAnnuncio"),
@@ -170,7 +167,6 @@ class ComandiAnnuncio(dbms: Database){
                 listaA.add(Annuncio(result.getString("id"),
                     result.getString("titolo"),
                     result.getDate("data").toString(),
-                    result.getString("descrizioneAnnuncio"),
                     result.getBoolean("tipoMateriale"),
                     result.getString("idProprietarioPersona"),
                     result.getInt("areaAnnuncio"),
