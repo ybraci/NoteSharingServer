@@ -110,11 +110,11 @@ class ComandiAnnuncio(dbms: Database){
             }
             connection.autoCommit = false
             val query = "UPDATE annuncio SET preferito = ? WHERE id = ?"
-            println("Executing query: $query with preferito=$preferito and id=$idAnnuncio")
+            // println("Executing query: $query with preferito=$preferito and id=$idAnnuncio")
             preparedStatement = connection.prepareStatement(query)
             preparedStatement.setBoolean(1, preferito)
             preparedStatement.setString(2, idAnnuncio)
-            val rowsUpdated = preparedStatement.executeUpdate() //*********************
+            val rowsUpdated = preparedStatement.executeUpdate()
             if (rowsUpdated > 0) {
                 println("Successfully updated $rowsUpdated row(s).")
             } else {
@@ -127,7 +127,6 @@ class ComandiAnnuncio(dbms: Database){
         } finally {
             preparedStatement?.close()
             connection?.autoCommit = true
-            // connection?.close()
         }
     }
 

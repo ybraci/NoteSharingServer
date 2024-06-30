@@ -1,7 +1,9 @@
 package com.example.comandiSQL
 
+import com.example.data.CambioPasswordRequest
 import com.example.data.Persona
 import com.example.database.Database
+import java.sql.Connection
 import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.SQLException
@@ -71,8 +73,6 @@ class ComandiPersona(dbms: Database) {
         // If none of the formats matched, throw an IllegalArgumentException
         throw IllegalArgumentException("Invalid date format: $date")
     }
-
-
     /**
      * Metodo che effettua un aggiornamento della password nella tabella *Persona* per un utente. ('E una transazione).
      *
@@ -81,29 +81,34 @@ class ComandiPersona(dbms: Database) {
      * @throws SQLException Se si verificano errori durante l'interazione con il database.
      */
     @Throws(SQLException::class)
-    fun cambioP(newPassword: String?, email: String?) {
+    fun cambioP(cambioPRequest: CambioPasswordRequest) {
+        var connection: Connection? = null
+        var preparedStatement: PreparedStatement? = null
         try {
-            database.getConnection()?.apply {
-                autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("UPDATE Persona "
-                        + "SET password=? "
-                        + "WHERE email=?; ")
-                prepared?.apply {
-                    setString(1, email)
-                    setString(2, newPassword)
-
-                    executeUpdate()
-                    close() // Close the PreparedStatement
-                }
-                commit() // Commit the transaction
+            connection = database.getConnection()
+            if (connection == null || connection.isClosed) {
+                throw SQLException("Failed to obtain a valid connection.")
             }
+            connection.autoCommit = false
+            val query = "UPDATE Persona SET password=? WHERE username=? AND password=? ; "
+            preparedStatement = connection.prepareStatement(query)
+            println("Executing query: $query with newPassword=${cambioPRequest.newPassword} and oldPassword=${cambioPRequest.oldPassword} and username=${cambioPRequest.username}")
+            preparedStatement.setString(1, cambioPRequest.newPassword)
+            preparedStatement.setString(2, cambioPRequest.username)
+            preparedStatement.setString(3, cambioPRequest.oldPassword)
+            val rowsUpdated = preparedStatement.executeUpdate()
+            if (rowsUpdated > 0) {
+                println("Successfully updated $rowsUpdated row(s).")
+            } else {
+                println("No rows were updated.")
+            }
+            connection.commit()
         } catch (e: SQLException) {
-            // Rollback the transaction in case of any exception
-            database.getConnection()?.rollback()
+            connection?.rollback()
             throw e
         } finally {
-            // Set auto-commit back to true after the transaction is done
-            database.getConnection()?.autoCommit = true
+            preparedStatement?.close()
+            connection?.autoCommit = true
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.routes
 
 import com.example.comandiSQL.ComandiPersona
+import com.example.data.CambioPasswordRequest
 import com.example.data.Persona
 import com.example.data.UserSession
 import com.example.database.Database
@@ -51,5 +52,17 @@ fun Route.personeRoute(database: Database) {
         }
     }
 
-
+    post("/CambioPassword"){
+        val request = call.receive<CambioPasswordRequest>()
+        try {
+           comandiPersona.cambioP(request)
+            call.respond(HttpStatusCode.OK, mapOf("message" to "Password changed successfully"))
+        } catch (e: SQLException) {
+            println("SQLException during user signup: ${e.message}")
+            call.respond(HttpStatusCode.InternalServerError, mapOf("message" to "Error during registration: ${e.message}"))
+        } catch (e: Exception) {
+            println("Exception during user signup: ${e.message}")
+            call.respond(HttpStatusCode.InternalServerError, mapOf("message" to "Unexpected error during registration: ${e.message}"))
+        }
+    }
 }
