@@ -1,18 +1,13 @@
 package com.example.routes
 
 import com.example.comandiSQL.*
-import com.example.data.Annuncio
-import com.example.data.DatoDigitale
-import com.example.data.MaterialeDigitale
-import com.example.data.MaterialeFisico
+import com.example.data.*
 import com.example.database.Database
 import io.ktor.http.*
-import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import java.io.File
 
 // Contiene tutti i post e i get per i metodi relativi agli annunci
 fun Route.notesRoute(database: Database) {
@@ -84,10 +79,10 @@ fun Route.notesRoute(database: Database) {
 
     // Metodo che permette al client di salvare un annuncio come preferito (aggiornando il campo preferito)
     post("/salvaAnnuncioComePreferito"){
-        val idA = call.receive<String>().trim('"')
+        val heartObj = call.receive<Heart>()
         //aggiorno l'attributo preferito a true
         try {
-            ComandiAnnuncio(database).updatePreferito(idA, true)
+            ComandiAnnuncio(database).addPreferito(heartObj)
             call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
         } catch (e: Exception) {
             call.respond(HttpStatusCode.InternalServerError)
@@ -97,13 +92,24 @@ fun Route.notesRoute(database: Database) {
 
     // Metodo che permette al client di eliminare un annuncio come preferito (aggiornando il campo preferito)
     post("/eliminaAnnuncioComePreferito"){
-        val idA = call.receive<String>().trim('"')
-        //aggiorno l'attributo preferito a true
+        val heartObj = call.receive<Heart>()
+        //aggiorno l'attributo preferito a false
         try {
-            ComandiAnnuncio(database).updatePreferito(idA, false)
+            ComandiAnnuncio(database).removePreferito(heartObj)
             call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio deleted successfully"))
         } catch (e: Exception) {
             call.respond(HttpStatusCode.InternalServerError)
+            e.printStackTrace()
+        }
+    }
+
+    // Metodo che restituisce gli annunci preferiti dell'utente
+    get("/getPrefetitiUtente"){
+        val username = call.request.queryParameters["username"].toString()
+        try {
+            val annunci = ComandiAnnuncio(database).getPreferitiUtente(username)
+            call.respond(HttpStatusCode.OK, annunci)
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -148,19 +154,6 @@ fun Route.notesRoute(database: Database) {
         try {
             val listaA: ArrayList<Annuncio> = ComandiAnnuncio(database).getUsernameAnnunci(username)
             call.respond(HttpStatusCode.OK, listaA) // se non ci sono elementi invia la lista vuota
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
-        //perchè in questo caso viene gestito già dal client
-    }
-
-    // Metodo che permette al client di ricevere tutti gli annunci salvati come preferiti
-    get("/listaAnnunciSalvati"){
-        val username = call.request.queryParameters["username"].toString()
-        try {
-            val annunci: ArrayList<Annuncio> = ComandiAnnuncio(database).getAnnunciPreferiti(username)
-            call.respond(HttpStatusCode.OK, annunci)
         } catch (e: Exception) {
             e.printStackTrace()
         }
