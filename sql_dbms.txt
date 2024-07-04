@@ -21,7 +21,7 @@ CREATE TABLE Annuncio (
     ON DELETE CASCADE
     ON UPDATE CASCADE,
     tipoMateriale BOOLEAN NOT NULL,
-    areaAnnuncio NUMERIC NOT NULL,
+    areaAnnuncio NUMERIC NOT NULL
     );
 
 CREATE TABLE MaterialeDigitale (
