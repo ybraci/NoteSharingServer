@@ -77,43 +77,6 @@ fun Route.notesRoute(database: Database) {
         call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
     }
 
-    // Metodo che permette al client di salvare un annuncio come preferito (aggiornando il campo preferito)
-    post("/salvaAnnuncioComePreferito"){
-        val heartObj = call.receive<Heart>()
-        //aggiorno l'attributo preferito a true
-        try {
-            ComandiAnnuncio(database).addPreferito(heartObj)
-            call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
-        } catch (e: Exception) {
-            call.respond(HttpStatusCode.InternalServerError)
-            e.printStackTrace()
-        }
-    }
-
-    // Metodo che permette al client di eliminare un annuncio come preferito (aggiornando il campo preferito)
-    post("/eliminaAnnuncioComePreferito"){
-        val heartObj = call.receive<Heart>()
-        //aggiorno l'attributo preferito a false
-        try {
-            ComandiAnnuncio(database).removePreferito(heartObj)
-            call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio deleted successfully"))
-        } catch (e: Exception) {
-            call.respond(HttpStatusCode.InternalServerError)
-            e.printStackTrace()
-        }
-    }
-
-    // Metodo che restituisce gli annunci preferiti dell'utente
-    get("/getPrefetitiUtente"){
-        val username = call.request.queryParameters["username"].toString()
-        try {
-            val annunci = ComandiAnnuncio(database).getPreferitiUtente(username)
-            call.respond(HttpStatusCode.OK, annunci)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     // Metodo che permette al client di eliminare un annuncio
     post("/eliminaAnnuncio"){
         try {

@@ -1,7 +1,6 @@
 package com.example.comandiSQL
 
 import com.example.data.Annuncio
-import com.example.data.Heart
 import com.example.database.Database
 import java.sql.*
 import java.text.SimpleDateFormat
@@ -67,82 +66,6 @@ class ComandiAnnuncio(dbms: Database){
         //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
         //perchè in questo caso viene gestito già dal client
     }
-
-    // Metodo che aggiunge un annuncio tra i preferiti
-    fun addPreferito(heartObj: Heart) {
-        try {
-            database.getConnection()?.apply {
-                autoCommit = false
-                val prepared: PreparedStatement? = prepareStatement("INSERT INTO Heart VALUES (?,?,?)")
-                prepared?.apply {
-                    setString(1, heartObj.usernameUtente)
-                    setString(2, heartObj.idAnnuncio)
-                    setBoolean(3, true)
-
-                    executeUpdate()
-                    close()
-                }
-                commit()
-            }
-        } catch (e: SQLException) {
-            database.getConnection()?.rollback()
-            throw e
-        } finally {
-            database.getConnection()?.autoCommit = true
-        }
-    }
-
-    // Metodo che elimina dal l'annuncio dagli preferiti
-    fun removePreferito(heartObj: Heart) {
-        val query = "DELETE FROM Heart WHERE Username = ? AND idAnnuncio = ?;"
-        var connection: Connection? = null
-        var preparedStatement: PreparedStatement? = null
-        try {
-            connection = database.getConnection()
-            if (connection == null || connection.isClosed) {
-                throw SQLException("Failed to obtain a valid connection.")
-            }
-            preparedStatement = connection.prepareStatement(query)
-            preparedStatement.setString(1, heartObj.usernameUtente)
-            preparedStatement.setString(2, heartObj.idAnnuncio)
-            preparedStatement.executeUpdate()
-        } catch (e: SQLException) {
-            throw e
-        } finally {
-            preparedStatement?.close()
-            println("PreparedStatement closed")
-        }
-    }
-
-    // Metodo che restituisce una lista con tutti gli annunci preferiti dell'utente
-    fun getPreferitiUtente(username: String): ArrayList<Annuncio> {
-        try {
-            val listaA: ArrayList<Annuncio> = ArrayList()
-            val query = ("SELECT id, titolo, data, tipoMateriale, idProprietarioPersona, areaAnnuncio FROM Annuncio, Heart WHERE id = idAnnuncio AND Username = ? ;")
-            val preparedStatement = database.getConnection()!!.prepareStatement(query)
-            preparedStatement?.apply {
-                setString(1, username)
-            }
-            val result = preparedStatement.executeQuery()
-            while (result.next()) {
-                listaA.add(Annuncio(result.getString("id"),
-                    result.getString("titolo"),
-                    result.getDate("data").toString(),
-                    result.getBoolean("tipoMateriale"),
-                    result.getString("idProprietarioPersona"),
-                    result.getInt("areaAnnuncio")
-                ))
-            }
-            result.close()
-            preparedStatement.close()
-            return listaA
-        } catch (e: SQLException) {
-            throw e
-        }
-        //se non trova nulla, manda una lista vuota -> non c'è bisogno di un check if(listaA.isNotEmpty)
-        //perchè in questo caso viene gestito già dal client
-    }
-
 
     // Metodo che elimina dal db l'annuncio con l'id corrispondente
     fun eliminaAnnuncio(idA: String) {
