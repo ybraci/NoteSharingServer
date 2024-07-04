@@ -1,19 +1,18 @@
 package com.example.comandiSQL
 
-import com.example.data.Annuncio
 import com.example.data.DatoDigitale
 import com.example.database.Database
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.SQLException
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.NoSuchElementException
-import kotlin.collections.ArrayList
 
+/*
+ * Classe per effettuare operazioni sulle tabelle DatoDigitale e Ha del dbms
+ */
 class ComandiDatoDigitale(dbms: Database){
     private var database: Database = dbms
 
+    // Metodo per inserire un nuovo pdf
     fun insertPDFtoDatoDigitale(datoD: DatoDigitale){
         try {
             database.getConnection()?.apply {
@@ -25,18 +24,19 @@ class ComandiDatoDigitale(dbms: Database){
                     setString(3, datoD.fileName)
 
                     executeUpdate()
-                    close() // Close the PreparedStatement
+                    close()
                 }
             }
         } catch (e: SQLException) {
-            // Rollback the transaction in case of any exception
             database.getConnection()?.rollback()
             throw e
         } finally {
-            // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
     }
+
+    // Metodo per inserire i dati nella tabella Ha. Nota: questa tabella fa il collegamento tra l'annuncio
+    // e i pdf (perché lo stesso annuncio può avere più pdf)
     fun insertPDFtoHA(datoD: DatoDigitale){
         try {
             database.getConnection()?.apply {
@@ -47,20 +47,21 @@ class ComandiDatoDigitale(dbms: Database){
                     setString(2, datoD.idAnnuncio)
 
                     executeUpdate()
-                    close() // Close the PreparedStatement
+                    println("Execution successful. Closing PreparedStatement.")
+
+                    close()
                 }
-                commit() // Commit the transaction
+                commit()
             }
         } catch (e: SQLException) {
-            // Rollback the transaction in case of any exception
             database.getConnection()?.rollback()
             throw e
         } finally {
-            // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
     }
 
+    // Metodo che restituisce tutti i pdf dell'annuncio corrispondente all'id in input
     fun getPDF(idAnnuncio: String): ArrayList<DatoDigitale>{
         try {
             val query = ("SELECT IDdatoDigitale, idAnnuncio, dato, nome "
@@ -93,7 +94,7 @@ class ComandiDatoDigitale(dbms: Database){
         }
     }
 
-    //Restiruisce gli id dei pdf (DatoDigitale) corrispondenti ad un Annuncio
+    // Metodo che restiruisce gli id dei pdf (DatoDigitale) corrispondenti ad un Annuncio
     fun trovaPdfs(idAnnuncio: String): ArrayList<String>{
         try {
             val query = ("SELECT IDdatoDigitale "
@@ -121,6 +122,7 @@ class ComandiDatoDigitale(dbms: Database){
         }
     }
 
+    // Metodo che elimina un pdf
     fun eliminaPdf(idPdf: String) {
         val query = "DELETE FROM DatoDigitale WHERE id = ?;"
         var connection: Connection? = null

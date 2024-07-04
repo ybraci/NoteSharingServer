@@ -2,6 +2,9 @@ package com.example.database
 
 import java.sql.*
 
+/*
+ * Classe per effettuare la connessione al dbms. Si ha un unica istanza.
+ */
 object Database {
     //Variabili di login
     private var host: String? = null
@@ -25,7 +28,7 @@ object Database {
         this.user = u
         this.password = p
         this.url = "$protocol$host/$db_name"
-        println(url) // da togliere
+        println(url)
 
         this.connection = DriverManager.getConnection(url, user, password)
         this.statement = (connection as Connection).createStatement( //Explicit cast di connection
@@ -34,21 +37,8 @@ object Database {
         )
 
     }
-
-
-    /**
-     * Metodo getter che restituisce la variabile di classe *Statement*.
-     *
-     * @return La variabile di classe *Statement*.
-     */
-    fun getStatement(): Statement? {
-        return statement
-    }
-
-    /**
-     * Metodo getter che restituisce la variabile di classe *Connection*.
-     *
-     * @return La variabile di classe *Connection*.
+    /*
+     * Metodo getter che restituisce la variabile di connection
      */
     fun getConnection(): Connection? {
         return connection

@@ -5,8 +5,13 @@ import com.example.database.Database
 import java.sql.PreparedStatement
 import java.sql.SQLException
 
+/*
+ * Classe per effettuare operazioni sulla tabella MaterialeFisico del dbms
+ */
 class ComandiMaterialeFisico(dbms: Database) {
     private var database: Database = dbms
+
+    // Metodo per inserire i dati del materiale fisico di un nuovo annuncio
     fun insertMF(mFisico: MaterialeFisico){
         try {
             database.getConnection()?.apply {
@@ -24,20 +29,19 @@ class ComandiMaterialeFisico(dbms: Database) {
                     setInt(9, mFisico.cap)
 
                     executeUpdate()
-                    close() // Close the PreparedStatement
+                    close()
                 }
-                commit() // Commit the transaction
+                commit()
             }
         } catch (e: SQLException) {
-            // Rollback the transaction in case of any exception
             database.getConnection()?.rollback()
             throw e
         } finally {
-            // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
     }
 
+    // Metodo che restituisce i dati del materiale fisico di un annuncio con id corrispondente a quello in input
     fun getMF(idAnnuncio: String): MaterialeFisico {
         try {
             val query = ("SELECT * "

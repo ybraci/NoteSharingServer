@@ -3,6 +3,7 @@ package com.example.comandiSQL
 import com.example.data.CambioPasswordRequest
 import com.example.data.Persona
 import com.example.database.Database
+import io.ktor.server.plugins.*
 import java.sql.Connection
 import java.sql.Date
 import java.sql.PreparedStatement
@@ -14,19 +15,13 @@ import java.time.format.DateTimeFormatterBuilder
 import java.util.*
 
 
-/**
- * Classe che contiene tutti i metodi che comunicano con la tabella *UtentiRegistrati* della base di dati, effettuando inserimenti, aggiornamenti e interrogazioni.
- *
- * @author Davide Sciacca, matricola nr. 749913, sede VARESE
- * @author Ylli Braci, matricola nr. 749714, sede VARESE
+/*
+ * Classe per effettuare operazioni sulla tabella Persona del dbms
  */
 class ComandiPersona(dbms: Database) {
     private var database: Database = dbms
-
-    @Throws(SQLException::class) //******????????????????????????????????????????????
-    fun signUp(
-        persona:Persona
-    ) {
+    //Metodo per salvare i dati di un nuovo utente
+    fun signUp(persona:Persona) {
         try {
             database.getConnection()?.apply {
                 autoCommit = false
@@ -46,48 +41,41 @@ class ComandiPersona(dbms: Database) {
                     setDate(12, parseDate(persona.dataN))
 
                     executeUpdate()
-                    close() // Close the PreparedStatement
+                    close() // Chiudo PreparedStatement
                 }
-                commit() // Commit the transaction
+                commit() // Commit la transaction
             }
         } catch (e: SQLException) {
-            // Rollback the transaction in case of any exception
+            // Rollback in caso di eccezioni
             database.getConnection()?.rollback()
             throw e
         } finally {
-            // Set auto-commit back to true after the transaction is done
+            // auto-commit a true
             database.getConnection()?.autoCommit = true
         }
     }
+    // Metodo per la conversione della stringa in date. Perchè gli oggetti date non erano serializzabili
     private fun parseDate(date: String): Date {
         val formats = arrayOf("dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd", "yyyy/MM/dd")
         for (f in formats){
             try {
                 return Date(SimpleDateFormat(f).parse(date).time)
-
             }catch (e: Exception) {
-                // Continue to next format if parsing fails
                 continue
             }
         }
-        // If none of the formats matched, throw an IllegalArgumentException
         throw IllegalArgumentException("Invalid date format: $date")
     }
-    /**
-     * Metodo che effettua un aggiornamento della password nella tabella *Persona* per un utente. ('E una transazione).
-     *
-     * @param newPassword Nuova password.
-     * @param email Username dell'utente che vuole aggiornare la password.
-     * @throws SQLException Se si verificano errori durante l'interazione con il database.
+    /*
+     * Metodo che effettua un aggiornamento della password nella tabella Persona per un utente
      */
-    @Throws(SQLException::class)
     fun cambioP(cambioPRequest: CambioPasswordRequest) {
         var connection: Connection? = null
         var preparedStatement: PreparedStatement? = null
         try {
             connection = database.getConnection()
             if (connection == null || connection.isClosed) {
-                throw SQLException("Failed to obtain a valid connection.")
+                throw SQLException("Failed to obtain a connection.")
             }
             connection.autoCommit = false
             val query = "UPDATE Persona SET password=? WHERE username=? AND password=? ; "
@@ -96,12 +84,7 @@ class ComandiPersona(dbms: Database) {
             preparedStatement.setString(1, cambioPRequest.newPassword)
             preparedStatement.setString(2, cambioPRequest.username)
             preparedStatement.setString(3, cambioPRequest.oldPassword)
-            val rowsUpdated = preparedStatement.executeUpdate()
-            if (rowsUpdated > 0) {
-                println("Successfully updated $rowsUpdated row(s).")
-            } else {
-                println("No rows were updated.")
-            }
+            preparedStatement.executeUpdate()
             connection.commit()
         } catch (e: SQLException) {
             connection?.rollback()
@@ -112,6 +95,7 @@ class ComandiPersona(dbms: Database) {
         }
     }
 
+    // Medodo che controlla le credenziali con quelle nel dbms. True se coincidono
     fun loginUser(username: String, password: String): Boolean {
         try {
             if(username.isBlank() || password.isBlank()){
@@ -142,11 +126,8 @@ class ComandiPersona(dbms: Database) {
             throw e
         }
     }
-    //In sostanza, questa funzione verifica se esiste un utente con l’username o l’email e la password forniti.
-    // Se esiste, l’utente viene autenticato con successo e la funzione restituisce true.
-    // Se non esiste, l’autenticazione fallisce e la funzione restituisce false.
 
-    @Throws(SQLException::class)
+    // Metodo che verifica se lo username esiste già nel dbms
     fun isUsernameTaken(username: String?): Boolean {
         try {
             val query = "SELECT username FROM Persona WHERE username = ?"
@@ -165,6 +146,32 @@ class ComandiPersona(dbms: Database) {
                 return true
             } else {
                 return false
+            }
+        } catch (e: SQLException) {
+            throw e
+        }
+    }
+
+    // Metodo che restituisce la mail della persona con lo username di input
+    fun getMail(username: String): String {
+        try {
+            val query = "SELECT email FROM Persona WHERE username = ?"
+            val preparedStatement = database.getConnection()!!.prepareStatement(query)
+
+            preparedStatement?.apply {
+                setString(1, username)
+            }
+            val result = preparedStatement.executeQuery()
+            var emailResult = ""
+            while(result.next()) {
+                emailResult = result.getString("email")
+            }
+            result?.close()
+            preparedStatement?.close()
+            if(emailResult.isNotBlank()){
+                return emailResult
+            } else {
+                throw NotFoundException()
             }
         } catch (e: SQLException) {
             throw e

@@ -6,9 +6,13 @@ import com.example.database.Database
 import java.sql.PreparedStatement
 import java.sql.SQLException
 
+/*
+ * Classe per effettuare operazioni sulla tabella DatoDigitale del dbms
+ */
 class ComandiMaterialeDigitale(dbms: Database){
     private var database: Database = dbms
 
+    // Metodo per inserire i dati del materiale digitale di un nuovo annuncio
     fun insertMD(mDigitale: MaterialeDigitale){
         try {
             database.getConnection()?.apply {
@@ -20,20 +24,19 @@ class ComandiMaterialeDigitale(dbms: Database){
                     setString(3, mDigitale.descrizioneMateriale)
 
                     executeUpdate()
-                    close() // Close the PreparedStatement
+                    close()
                 }
-                commit() // Commit the transaction
+                commit()
             }
         } catch (e: SQLException) {
-            // Rollback the transaction in case of any exception
             database.getConnection()?.rollback()
             throw e
         } finally {
-            // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
     }
 
+    // Metodo che restituisce i dati del materiale digitale di un annuncio con id corrispondente a quello in input
     fun getMD(idAnnuncio: String): MaterialeDigitale {
         try {
             val query = ("SELECT * "

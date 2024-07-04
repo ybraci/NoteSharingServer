@@ -6,9 +6,13 @@ import java.sql.*
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
+/*
+ * Classe per effettuare operazioni sulla tabella Annunci del dbms
+ */
 class ComandiAnnuncio(dbms: Database){
     private var database: Database = dbms
 
+    // Metodo per l'inserimento di un nuovo annuncio
     fun insertAdv(annuncio: Annuncio){
         try {
             database.getConnection()?.apply {
@@ -24,22 +28,20 @@ class ComandiAnnuncio(dbms: Database){
                     setBoolean(7, annuncio.preferito)
 
                     executeUpdate()
-                    close() // Close the PreparedStatement
+                    close()
                 }
-                commit() // Commit the transaction
+                commit()
             }
         } catch (e: SQLException) {
-            // Rollback the transaction in case of any exception
             database.getConnection()?.rollback()
             throw e
         } finally {
-            // Set auto-commit back to true after the transaction is done
             database.getConnection()?.autoCommit = true
         }
     }
 
+    // Metodo che restituisce una lista con tutti gli annunci tranne quelli che ha pubblicato l'utente con lo username in input
     fun getListaAnnunci(username: String): ArrayList<Annuncio> {
-        //Questa query seleziona tutti gli annunci tranne quelli che ha pubblicato l'utente loggato
         try {
             val query = ("SELECT * FROM Annuncio WHERE id NOT IN (SELECT id FROM Annuncio WHERE idProprietarioPersona = ?) ;")
             val preparedStatement = database.getConnection()!!.prepareStatement(query)
@@ -68,6 +70,7 @@ class ComandiAnnuncio(dbms: Database){
         //perchè in questo caso viene gestito già dal client
     }
 
+    // Metodo che restiruisce tutti gli annunci dell'utente in input, con l'attributo preferito = true
     fun getAnnunciPreferiti(username: String): ArrayList<Annuncio> {
         try {
             val listaA: ArrayList<Annuncio> = ArrayList()
@@ -99,7 +102,7 @@ class ComandiAnnuncio(dbms: Database){
         //perchè in questo caso viene gestito già dal client
     }
 
-    //Solo questa versione non comporta la chiusura della connesione dal parte del db
+    // Metodo che aggiorna l'attributo preferito all'annuncio con l'id preso in input, con il valore preso in input
     fun updatePreferito(idAnnuncio: String, preferito: Boolean) {
         var connection: Connection? = null
         var preparedStatement: PreparedStatement? = null
@@ -110,16 +113,10 @@ class ComandiAnnuncio(dbms: Database){
             }
             connection.autoCommit = false
             val query = "UPDATE annuncio SET preferito = ? WHERE id = ?"
-            // println("Executing query: $query with preferito=$preferito and id=$idAnnuncio")
             preparedStatement = connection.prepareStatement(query)
             preparedStatement.setBoolean(1, preferito)
             preparedStatement.setString(2, idAnnuncio)
-            val rowsUpdated = preparedStatement.executeUpdate()
-            if (rowsUpdated > 0) {
-                println("Successfully updated $rowsUpdated row(s).")
-            } else {
-                println("No rows were updated. Check if idAnnuncio=$idAnnuncio exists.")
-            }
+            preparedStatement.executeUpdate()
             connection.commit()
         } catch (e: SQLException) {
             connection?.rollback()
@@ -130,6 +127,7 @@ class ComandiAnnuncio(dbms: Database){
         }
     }
 
+    // Metodo che elimina dal db l'annuncio con l'id corrispondente
     fun eliminaAnnuncio(idA: String) {
         val query = "DELETE FROM annuncio WHERE id = ?;"
         var connection: Connection? = null
@@ -152,7 +150,7 @@ class ComandiAnnuncio(dbms: Database){
         }
     }
 
-    //restituisce tutti gli annunci pubblicati dall'utente
+    // Metodo che restituisce tutti gli annunci pubblicati dall'utente con lo username in input
     fun getUsernameAnnunci(username: String): ArrayList<Annuncio> {
         try {
             val query = ("SELECT * FROM Annuncio WHERE idProprietarioPersona = ?;")
@@ -182,7 +180,7 @@ class ComandiAnnuncio(dbms: Database){
         //perchè in questo caso viene gestito già dal client
     }
 
-    //Se restituisce true l'annuncio è fisico
+    // Metodo che restituisce true se l'annuncio in input ha un materiale di tipo fisico
     fun isFisico(idA: String): Boolean {
         try {
             val query = ("SELECT tipomateriale FROM annuncio WHERE id = ? ;")

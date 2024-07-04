@@ -14,8 +14,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.File
 
+// Contiene tutti i post e i get per i metodi relativi agli annunci
 fun Route.notesRoute(database: Database) {
-
+    // Metodo che permette al client di inviare un PDF
     post("/uploadPdf") {
         val datoDigitale = call.receive<DatoDigitale>()
         //Salvataggio nel db
@@ -33,6 +34,7 @@ fun Route.notesRoute(database: Database) {
         }
     }
 
+    // Metodo che permette al client di ricevere i PDF associati ad un annuncio
     get("/getPDFs"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
         try{
@@ -44,6 +46,7 @@ fun Route.notesRoute(database: Database) {
         }
     }
 
+    // Metodo che permette al client di inviare un annuncio al server
     post("/uploadAnnuncio"){
         val annuncio = call.receive<Annuncio>()
         try {
@@ -55,6 +58,7 @@ fun Route.notesRoute(database: Database) {
         call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
     }
 
+    // Metodo che permette al client di inviare il contenuto di un annuncio di tipo digitale al server
     post("/uploadMD"){
         val mDigitale = call.receive<MaterialeDigitale>()
         try {
@@ -66,6 +70,7 @@ fun Route.notesRoute(database: Database) {
         call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
     }
 
+    // Metodo che permette al client di inviare il contenuto di un annuncio di tipo fisico al server
     post("/uploadMF"){
         val mFisico = call.receive<MaterialeFisico>()
         try {
@@ -77,6 +82,7 @@ fun Route.notesRoute(database: Database) {
         call.respond(HttpStatusCode.OK, mapOf("message" to "Annuncio received successfully"))
     }
 
+    // Metodo che permette al client di salvare un annuncio come preferito (aggiornando il campo preferito)
     post("/salvaAnnuncioComePreferito"){
         val idA = call.receive<String>().trim('"')
         //aggiorno l'attributo preferito a true
@@ -89,6 +95,7 @@ fun Route.notesRoute(database: Database) {
         }
     }
 
+    // Metodo che permette al client di eliminare un annuncio come preferito (aggiornando il campo preferito)
     post("/eliminaAnnuncioComePreferito"){
         val idA = call.receive<String>().trim('"')
         //aggiorno l'attributo preferito a true
@@ -101,6 +108,7 @@ fun Route.notesRoute(database: Database) {
         }
     }
 
+    // Metodo che permette al client di eliminare un annuncio
     post("/eliminaAnnuncio"){
         try {
             val idA = call.receive<String>().trim('"')
@@ -121,6 +129,7 @@ fun Route.notesRoute(database: Database) {
         }
     }
 
+    // Metodo che permette al client di ricevere tutti gli annunci tranne quelli pubblicati dall'utente stesso
     get("/listaAnnunci"){
         val username = call.request.queryParameters["username"].toString()
         try {
@@ -133,6 +142,7 @@ fun Route.notesRoute(database: Database) {
         //perchè in questo caso viene gestito già dal client
     }
 
+    // Metodo che permette al client di ricevere tutti gli annunci creati da lui
     get("/myAnnunci"){
         val username = call.request.queryParameters["username"].toString()
         try {
@@ -145,6 +155,7 @@ fun Route.notesRoute(database: Database) {
         //perchè in questo caso viene gestito già dal client
     }
 
+    // Metodo che permette al client di ricevere tutti gli annunci salvati come preferiti
     get("/listaAnnunciSalvati"){
         val username = call.request.queryParameters["username"].toString()
         try {
@@ -157,6 +168,7 @@ fun Route.notesRoute(database: Database) {
         //perchè in questo caso viene gestito già dal client
     }
 
+    // Metodo che permette al client di ricevere i dati del materiale fisico dell'annuncio preso in input
     get("/materialeFisicoAssociatoAnnuncio"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
         if (idAnnuncio.isNotBlank()) {
@@ -169,6 +181,7 @@ fun Route.notesRoute(database: Database) {
         }
     }
 
+    // Metodo che permette al client di ricevere i dati del materiale digitale dell'annuncio preso in input
     get("/materialeDigitaleAssociatoAnnuncio"){
         val idAnnuncio = call.request.queryParameters["idAnnuncio"].toString()
         if (idAnnuncio.isNotBlank()) {
