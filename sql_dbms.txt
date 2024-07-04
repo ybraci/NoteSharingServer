@@ -1,0 +1,67 @@
+CREATE TABLE Persona (
+    username VARCHAR (20) PRIMARY KEY,
+    email VARCHAR NOT NULL,
+    password VARCHAR(16) NOT NULL,
+    cf CHAR(16) NOT NULL,
+    nome VARCHAR(40),
+    cognome VARCHAR(40),
+    provincia VARCHAR(20),
+    comune VARCHAR(40),
+    via VARCHAR(80),
+    nrCivico NUMERIC,
+    cap CHAR(5),
+    dataN DATE);
+
+
+CREATE TABLE Annuncio (
+    id VARCHAR PRIMARY KEY,
+    titolo VARCHAR(80) NOT NULL,
+    data DATE,
+    idProprietarioPersona VARCHAR REFERENCES Persona(username)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+    tipoMateriale BOOLEAN NOT NULL,
+    areaAnnuncio NUMERIC NOT NULL,
+    );
+
+CREATE TABLE MaterialeDigitale (
+    id VARCHAR PRIMARY KEY,
+    annoRif NUMERIC,
+    descrizioneMateriale VARCHAR(200),
+    FOREIGN KEY (id) REFERENCES Annuncio(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+
+CREATE TABLE MaterialeFisico (
+    id VARCHAR PRIMARY KEY,
+    costo NUMERIC NOT NULL,
+    annoRif NUMERIC,
+    descrizioneMateriale VARCHAR(200),
+    provincia VARCHAR(20) NOT NULL,
+    comune VARCHAR(40) NOT NULL,
+    via VARCHAR(80) NOT NULL,
+    nrCivico NUMERIC NOT NULL,
+    cap CHAR(5) NOT NULL,
+    FOREIGN KEY (id) REFERENCES Annuncio(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+
+CREATE TABLE DatoDigitale (
+    id VARCHAR PRIMARY KEY, 
+    dato BYTEA NOT NULL,
+    nome VARCHAR NOT NULL
+);
+
+CREATE TABLE ha (
+    IDdatoDigitale VARCHAR REFERENCES DatoDigitale(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+    idAnnuncio VARCHAR REFERENCES Annuncio(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+    PRIMARY KEY (idAnnuncio, IDdatoDigitale)
+    );
